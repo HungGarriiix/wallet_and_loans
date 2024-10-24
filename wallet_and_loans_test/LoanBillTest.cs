@@ -8,7 +8,7 @@ namespace wallet_and_loans_test
 {
     public class LoanBillTest
     {
-        LoanBill loan1;
+        BillDebt loan1;
 
         [SetUp]
         public void Setup()

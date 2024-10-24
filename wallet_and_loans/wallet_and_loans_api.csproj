@@ -10,4 +10,8 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\wallet_and_loans_components\wallet_and_loans_components.csproj" />
+  </ItemGroup>
+
 </Project>

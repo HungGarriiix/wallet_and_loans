@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace wallet_and_loans.Logics
 {
-    public class LoanItem: Item
+    public class DebtItem: Item
     {
-        public LoanItem(string name, int quantity, float singleValue)
+        public DebtItem(string name, int quantity, float singleValue)
             : base(name, quantity)
         {
             SinglePrice = singleValue;

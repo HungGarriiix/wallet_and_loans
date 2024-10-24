@@ -9,14 +9,14 @@ namespace wallet_and_loans_test
 {
     public class PersonTest
     {
-        Person person1;
+        Debtor person1;
         Contact contact_inPerson;
         Contact contact_discord;
 
         [SetUp]
         public void SetUp()
         {
-            person1 = new Person(1, "Test");
+            person1 = new Debtor(1, "Test");
             contact_inPerson = new Contact(ContactType.IN_PERSON, "In person test", "Just testing");
             contact_discord = new Contact(ContactType.DISCORD, "Discord test", "Just testing");
         }
@@ -42,7 +42,7 @@ namespace wallet_and_loans_test
                 contact_discord,
                 contact_inPerson
             };
-            person1 = new Person(1, "Test", contacts);
+            person1 = new Debtor(1, "Test", contacts);
             int expected_id = 1;
             string expected_name = "Test";
 

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace wallet_and_loans.Logics
 {
-    public class Person
+    public class Debtor
     {
-        public Person(int id, string name)
+        public Debtor(int id, string name)
         {
             ID = id;
             Name = name;
@@ -16,7 +16,7 @@ namespace wallet_and_loans.Logics
         }
 
         // get from db
-        public Person(int id, string name, List<Contact> contacts) : this(id, name) 
+        public Debtor(int id, string name, List<Contact> contacts) : this(id, name) 
         {
             Contacts = contacts;
         }

@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace wallet_and_loans.Logics
 {
-    public class LoanBill
+    public class BillDebt
     {
-        public LoanBill(Bill bill)
+        public BillDebt(Bill bill)
         {
             BillToLoan = bill;
         }
 
         // get from db
-        public LoanBill(Bill bill, List<Loan> loans, bool paymentCompleted)
+        public BillDebt(Bill bill, List<Debt> loans, bool paymentCompleted)
             : this(bill)
         {
             Loans = loans;
@@ -22,10 +22,10 @@ namespace wallet_and_loans.Logics
         }
 
         public Bill BillToLoan { get; private set; } = null;
-        public List<Loan> Loans { get; private set; } = new List<Loan>();
+        public List<Debt> Loans { get; private set; } = new List<Debt>();
         public bool PaymentCompleted { get; private set; } = false;
 
-        public void AddLoan(Loan loan)
+        public void AddLoan(Debt loan)
         {
             if (Loans.FirstOrDefault(s => s.Loaned == loan.Loaned) != null) // loaned person exists
                 throw new Exception($"{loan.Loaned.Name} is already exists.");
@@ -33,28 +33,28 @@ namespace wallet_and_loans.Logics
             Loans.Add(loan);
         }
 
-        public Loan GetLoan(Person person)
+        public Debt GetLoan(Debtor person)
         {
-            Loan spending = Loans.FirstOrDefault(s => s.Loaned == person);
+            Debt spending = Loans.FirstOrDefault(s => s.Loaned == person);
             if (spending == null)
                 throw new Exception($"Cannot find the details about {person.Name}'s loan.");
 
             return spending;
         }
 
-        public void DeleteLoan(Person person)
+        public void DeleteLoan(Debtor person)
         {
-            Loan loan = GetLoan(person);
+            Debt loan = GetLoan(person);
             Loans.Remove(loan);
         }
 
-        public void AddItemToLoaned(Loan loan, LoanItem item)
+        public void AddItemToLoaned(Debt loan, DebtItem item)
         {
             if (CheckItemAvailabilityInLoans(item))
                 loan.GetItem(item.Name).Quantity += item.Quantity;
         }
 
-        private bool CheckItemAvailabilityInLoans(LoanItem item)
+        private bool CheckItemAvailabilityInLoans(DebtItem item)
         {
             int total = 0; // get from Bill
             int loaned = GetTotalLoanedItems(item.Name);

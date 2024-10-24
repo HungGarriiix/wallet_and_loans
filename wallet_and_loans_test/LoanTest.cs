@@ -11,20 +11,20 @@ namespace wallet_and_loans_test
 {
     public class LoanTest
     {
-        Person person1;
-        Loan loan1;
-        LoanItem cart;
-        LoanItem shoes;
-        LoanItem chocolate;
+        Debtor person1;
+        Debt loan1;
+        DebtItem cart;
+        DebtItem shoes;
+        DebtItem chocolate;
 
         [SetUp]
         public void SetUp()
         {
-            person1 = new Person(1, "Test");
-            loan1 = new Loan(person1, "Test loaned.");
-            cart = new LoanItem("Cart", 13, 15.00f);
-            shoes = new LoanItem("Shoes", 1, 100f);
-            chocolate = new LoanItem("Chocolate", 10, 1f);
+            person1 = new Debtor(1, "Test");
+            loan1 = new Debt(person1, "Test loaned.");
+            cart = new DebtItem("Cart", 13, 15.00f);
+            shoes = new DebtItem("Shoes", 1, 100f);
+            chocolate = new DebtItem("Chocolate", 10, 1f);
         }
 
         [Test]
@@ -38,7 +38,7 @@ namespace wallet_and_loans_test
         }
 
         [TestCaseSource("AddItemTestCase")] // might optimise this to accept more LoanStack objects
-        public void TestAddItem((LoanItem item, string itemName) test)
+        public void TestAddItem((DebtItem item, string itemName) test)
         {
             loan1.AddItem(test.item);
 
@@ -67,7 +67,7 @@ namespace wallet_and_loans_test
         }
 
         [TestCaseSource("AddItemTestCase")]
-        public void TestGetItem((LoanItem item, string itemName) test)
+        public void TestGetItem((DebtItem item, string itemName) test)
         {
             loan1.ItemList.Add(test.item);
 
@@ -92,7 +92,7 @@ namespace wallet_and_loans_test
         public void TestChangeItemInfo()
         {
             loan1.AddItem(shoes);
-            LoanItem test = new LoanItem("Test change", 15, 15f);
+            DebtItem test = new DebtItem("Test change", 15, 15f);
             loan1.ChangeItemInfo(shoes.Name, test);
 
             Assert.Multiple(() =>
@@ -107,7 +107,7 @@ namespace wallet_and_loans_test
         [Test]
         public void TestChangeNonExistedItem()
         {
-            Assert.Throws<Exception>(() => loan1.ChangeItemInfo("Non existed", new LoanItem("Random item", 1, 1f)), "Cannot find item with name 'Non existed'...");
+            Assert.Throws<Exception>(() => loan1.ChangeItemInfo("Non existed", new DebtItem("Random item", 1, 1f)), "Cannot find item with name 'Non existed'...");
         }
 
         [Test]
@@ -185,7 +185,7 @@ namespace wallet_and_loans_test
         }
 
         [TestCaseSource("AddItemTestCasePrice")]    // might optimise this to accept more LoanStack objects
-        public void TestNumberOfItemsWhenAdd1((LoanItem item, int quantity) i)
+        public void TestNumberOfItemsWhenAdd1((DebtItem item, int quantity) i)
         {
             loan1.AddItem(i.item);
 
@@ -209,7 +209,7 @@ namespace wallet_and_loans_test
         }
 
         [TestCaseSource("AddItemTestCasePrice")]    // might optimise this to accept more LoanStack objects
-        public void TestNumberOfQuantitiesWhenAddOne((LoanItem item, int quantity) i)
+        public void TestNumberOfQuantitiesWhenAddOne((DebtItem item, int quantity) i)
         {
             loan1.AddItem(i.item);
 
@@ -232,18 +232,18 @@ namespace wallet_and_loans_test
             Assert.That(loan1.NumberOfQuantities, Is.EqualTo(0));
         }
 
-        private static IEnumerable<(LoanItem, string)> AddItemTestCase()
+        private static IEnumerable<(DebtItem, string)> AddItemTestCase()
         {
-            yield return (new LoanItem("Cart", 13, 15.00f), "Cart");
-            yield return (new LoanItem("Shoes", 1, 100f), "Shoes");
-            yield return (new LoanItem("Chocolate", 10, 1f), "Chocolate");
+            yield return (new DebtItem("Cart", 13, 15.00f), "Cart");
+            yield return (new DebtItem("Shoes", 1, 100f), "Shoes");
+            yield return (new DebtItem("Chocolate", 10, 1f), "Chocolate");
         }
 
-        private static IEnumerable<(LoanItem, int)> AddItemTestCasePrice()
+        private static IEnumerable<(DebtItem, int)> AddItemTestCasePrice()
         {
-            yield return (new LoanItem("Cart", 13, 15.00f), 13);
-            yield return (new LoanItem("Shoes", 1, 100f), 1);
-            yield return (new LoanItem("Chocolate", 10, 1f), 10);
+            yield return (new DebtItem("Cart", 13, 15.00f), 13);
+            yield return (new DebtItem("Shoes", 1, 100f), 1);
+            yield return (new DebtItem("Chocolate", 10, 1f), 10);
         }
 
         /*private static IEnumerable<(LoanStack, string)> AddItemTestCase2()

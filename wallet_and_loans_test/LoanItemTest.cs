@@ -8,12 +8,12 @@ namespace wallet_and_loans_test
 {
     public class LoanItemTest
     {
-        LoanItem loan1;
+        DebtItem loan1;
 
         [SetUp]
         public void Setup()
         {
-            loan1 = new LoanItem("Test", 4, 12.00f);
+            loan1 = new DebtItem("Test", 4, 12.00f);
         }
 
         [Test]

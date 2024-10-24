@@ -9,10 +9,10 @@ namespace wallet_and_loans.DAO
 {
     public interface PersonDAO
     {
-        public void AddPerson(Person person);
-        public Person GetPersonByID(int id);
-        public Person GetPersonByName(string name);
-        public void UpdatePerson(Person person);
+        public void AddPerson(Debtor person);
+        public Debtor GetPersonByID(int id);
+        public Debtor GetPersonByName(string name);
+        public void UpdatePerson(Debtor person);
         public void DeletePerson(int id);
     }
 }

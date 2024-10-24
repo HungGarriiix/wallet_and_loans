@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace wallet_and_loans.Logics
 {
-    public class User : Person
+    public class User : Debtor
     {
         public User(int id, string name, string username, string password)
             : base(id, name)
@@ -17,7 +17,7 @@ namespace wallet_and_loans.Logics
         }
 
         // get from db
-        public User(int id, string name, string username, string password, List<Contact> contacts, List<Person> loaned, List<Wallet> wallets)
+        public User(int id, string name, string username, string password, List<Contact> contacts, List<Debtor> loaned, List<Wallet> wallets)
             : base(id, name, contacts)
         {
             SavedLoanedList = loaned;
@@ -26,14 +26,14 @@ namespace wallet_and_loans.Logics
             Password = password;
         }
 
-        public List<Person> SavedLoanedList { get; set; } = new List<Person>();
+        public List<Debtor> SavedLoanedList { get; set; } = new List<Debtor>();
         public List<Wallet> Wallets { get; set; } = new List<Wallet>();
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
 
-        public Person FindLoanedPerson(string name)
+        public Debtor FindLoanedPerson(string name)
         {
-            Person person = SavedLoanedList.FirstOrDefault(x => x.Name == name);
+            Debtor person = SavedLoanedList.FirstOrDefault(x => x.Name == name);
             if (person == null)
             {
                 throw new Exception("Cannot find person with name " + name);
@@ -41,9 +41,9 @@ namespace wallet_and_loans.Logics
             return person;
         }
 
-        public Person FindLoanedPerson(int id)
+        public Debtor FindLoanedPerson(int id)
         {
-            Person person = SavedLoanedList.FirstOrDefault(x => x.ID == id);
+            Debtor person = SavedLoanedList.FirstOrDefault(x => x.ID == id);
             if (person == null)
             {
                 throw new Exception("Cannot find person with ID " + id);
