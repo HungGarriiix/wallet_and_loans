@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace wallet_and_loans.Logics
+namespace wallet_and_loans_components.Logics
 {
     public class User : Debtor
     {
