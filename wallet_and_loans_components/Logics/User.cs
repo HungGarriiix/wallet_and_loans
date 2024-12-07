@@ -70,5 +70,10 @@ namespace wallet_and_loans_components.Logics
             }
             return wallet;
         }
+
+        public void AddWallet(Wallet wallet)
+        {
+            Wallets.Add(wallet);
+        }
     }
 }

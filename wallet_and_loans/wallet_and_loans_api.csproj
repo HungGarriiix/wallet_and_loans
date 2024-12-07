@@ -11,10 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\wallet_and_loans_components\wallet_and_loans_components.csproj" />
   </ItemGroup>
 
