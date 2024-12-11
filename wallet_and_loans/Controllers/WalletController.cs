@@ -18,18 +18,34 @@ namespace wallet_and_loans_api.Controllers
             _walletService = walletService;
         }
 
-        // GET: api/<WalletController>
+        // GET: api/wallets
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IActionResult GetWallets()
         {
-            return new string[] { "value1", "value2" };
+            try
+            {
+                var wallets = _walletService.GetWallets();
+                return Ok(wallets);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // GET api/<WalletController>/5
+        // GET api/wallets/:id
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult GetWalletByID(int id)
         {
-            return "value";
+            try
+            {
+                var wallet = _walletService.GetWalletByID(id);
+                return Ok(wallet);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // POST api/wallets/add
@@ -39,7 +55,7 @@ namespace wallet_and_loans_api.Controllers
             try
             {
                 _walletService.AddWallet(dto, out Wallet wallet);
-                return Created("/api/wallets/1", wallet);
+                return Created($"/api/wallets/{wallet.ID}", wallet);
             }
             catch (Exception ex)
             {
@@ -47,13 +63,23 @@ namespace wallet_and_loans_api.Controllers
             }
         }
 
-        // PUT api/<WalletController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        // PATCH api/wallets/:id
+        [HttpPatch("{id}")]
+        public IActionResult UpdateWallet(int id, [FromBody] UpdateWalletDTO dto)
         {
+            try
+            {
+                _walletService.UpdateWallet(id, dto, out Wallet result);
+                return Ok(result);
+            }
+            catch (Exception ex) 
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE api/<WalletController>/5
+        // to be continued
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
