@@ -14,28 +14,26 @@ namespace wallet_and_loans_api.Services
             _walletService = walletService;
         }
 
-        public List<Bill> Bills { get; set; } = new List<Bill>();
-
         public IEnumerable<Bill> GetBills()
         {
-            return Bills;
+            return TestStatic.Bills;
         }
 
         public Bill GetBillByID(int id)
         {
-            return Bills[id];
+            return TestStatic.Bills[id];
         }
 
         public void CreateBill(CreateBillDTO dto, out Bill result)
         {
             Wallet wallet = _walletService.GetWalletByID(dto.WalletUsedID);
             Bill bill = new Bill(
-                Bills.Count + 1,
+                TestStatic.Bills.Count + 1,
                 dto.DateCreated,
                 dto.Description,
                 wallet,
                 TestStatic.UserTest);
-            Bills.Add(bill);
+            TestStatic.Bills.Add(bill);
             result = bill;
         }
     }

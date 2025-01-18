@@ -42,7 +42,7 @@ namespace wallet_and_loans_api.Controllers
             {
                 var bill = _billService.GetBillByID(id);
                 return Ok(bill);
-            }
+            } 
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -50,7 +50,7 @@ namespace wallet_and_loans_api.Controllers
         }
 
         // POST api/<BillController>
-        [HttpPost]
+        [HttpPost("create")]
         public IActionResult CreateBill([FromBody] CreateBillDTO dto)
         {
             try
