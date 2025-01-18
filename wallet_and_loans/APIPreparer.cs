@@ -8,6 +8,7 @@ namespace wallet_and_loans_api
         public static void RegisterServices(WebApplicationBuilder builder)
         {
             builder.Services.AddScoped<IWalletService, WalletService>();
+            builder.Services.AddScoped<IBillService, BillService>();
         }
     }
 }

@@ -42,6 +42,7 @@ namespace wallet_and_loans_api.Controllers
                 var wallet = _walletService.GetWalletByID(id);
                 return Ok(wallet);
             }
+
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -81,8 +82,9 @@ namespace wallet_and_loans_api.Controllers
         // DELETE api/<WalletController>/5
         // to be continued
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            return Unauthorized();
         }
     }
 }
