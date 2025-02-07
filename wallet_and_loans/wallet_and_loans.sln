@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wallet_and_loans_api", "wal
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wallet_and_loans_test", "..\wallet_and_loans_test\wallet_and_loans_test.csproj", "{97D8231F-B283-4D69-9D6E-3029B6F10FB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wallet_and_loans_components", "..\wallet_and_loans_components\wallet_and_loans_components.csproj", "{3BF595BC-2244-4043-8BFC-5357C48E4B23}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wallet_and_loans_components", "..\wallet_and_loans_components\wallet_and_loans_components.csproj", "{3BF595BC-2244-4043-8BFC-5357C48E4B23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "yuuka-chan", "..\yuuka-chan\yuuka-chan.csproj", "{7665AB05-91C5-4734-9290-061C95E2DAC4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +85,26 @@ Global
 		{3BF595BC-2244-4043-8BFC-5357C48E4B23}.Release|x64.Build.0 = Release|Any CPU
 		{3BF595BC-2244-4043-8BFC-5357C48E4B23}.Release|x86.ActiveCfg = Release|Any CPU
 		{3BF595BC-2244-4043-8BFC-5357C48E4B23}.Release|x86.Build.0 = Release|Any CPU
+		{7665AB05-91C5-4734-9290-061C95E2DAC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7665AB05-91C5-4734-9290-061C95E2DAC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7665AB05-91C5-4734-9290-061C95E2DAC4}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{7665AB05-91C5-4734-9290-061C95E2DAC4}.Debug|ARM.Build.0 = Debug|Any CPU
+		{7665AB05-91C5-4734-9290-061C95E2DAC4}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{7665AB05-91C5-4734-9290-061C95E2DAC4}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{7665AB05-91C5-4734-9290-061C95E2DAC4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7665AB05-91C5-4734-9290-061C95E2DAC4}.Debug|x64.Build.0 = Debug|Any CPU
+		{7665AB05-91C5-4734-9290-061C95E2DAC4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7665AB05-91C5-4734-9290-061C95E2DAC4}.Debug|x86.Build.0 = Debug|Any CPU
+		{7665AB05-91C5-4734-9290-061C95E2DAC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7665AB05-91C5-4734-9290-061C95E2DAC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7665AB05-91C5-4734-9290-061C95E2DAC4}.Release|ARM.ActiveCfg = Release|Any CPU
+		{7665AB05-91C5-4734-9290-061C95E2DAC4}.Release|ARM.Build.0 = Release|Any CPU
+		{7665AB05-91C5-4734-9290-061C95E2DAC4}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{7665AB05-91C5-4734-9290-061C95E2DAC4}.Release|ARM64.Build.0 = Release|Any CPU
+		{7665AB05-91C5-4734-9290-061C95E2DAC4}.Release|x64.ActiveCfg = Release|Any CPU
+		{7665AB05-91C5-4734-9290-061C95E2DAC4}.Release|x64.Build.0 = Release|Any CPU
+		{7665AB05-91C5-4734-9290-061C95E2DAC4}.Release|x86.ActiveCfg = Release|Any CPU
+		{7665AB05-91C5-4734-9290-061C95E2DAC4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
