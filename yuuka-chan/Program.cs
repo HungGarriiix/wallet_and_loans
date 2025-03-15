@@ -12,6 +12,7 @@ using DSharpPlus.Interactivity;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using yuuka_chan.Command;
 
 namespace yuuka_chan
 {
@@ -49,6 +50,7 @@ namespace yuuka_chan
             
             Client = new DiscordClient(config);
             var slash = Client.UseSlashCommands();
+            slash.RegisterCommands<BillCommand>();
 
             // Starts connecting (2 hand shake protocol)
             await Client.ConnectAsync();
