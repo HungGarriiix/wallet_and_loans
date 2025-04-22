@@ -13,5 +13,7 @@ namespace yuuka_chan
         public string Token { get; private set; }
         [JsonProperty("prefix")]
         public string Prefix { get; private set; }
+        [JsonProperty("url")]
+        public string URL { get; private set; }
     }
 }

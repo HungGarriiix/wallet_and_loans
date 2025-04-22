@@ -16,7 +16,7 @@ using yuuka_chan.Command;
 
 namespace yuuka_chan
 {
-    internal class Program
+    public class Program
     {
         // main client connection
         public static DiscordClient Client { get; set; }
@@ -27,7 +27,9 @@ namespace yuuka_chan
         // commands centre, where to assign BaseCommandModule classes
         public static SlashCommandsExtension Commands { get; private set; }
 
-        
+        public static string URL { get; private set; }
+        public static HttpClient Service { get; private set; } = new HttpClient();
+
         public static async Task Main(string[] args)
         {
             // JSON reader
@@ -47,7 +49,15 @@ namespace yuuka_chan
                 AutoReconnect = true,
                 MinimumLogLevel = LogLevel.Debug
             };
-            
+
+            // Setup for dev server
+            URL = configJson.URL;
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+
+            // Pass the handler to httpclient(from you are calling api)
+            Service = new HttpClient(clientHandler);
+
             Client = new DiscordClient(config);
             var slash = Client.UseSlashCommands();
             slash.RegisterCommands<BillCommand>();

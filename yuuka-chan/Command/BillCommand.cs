@@ -11,14 +11,36 @@ namespace yuuka_chan.Command
 {
     public class BillCommand: ApplicationCommandModule
     {
+        private string _billApi = Program.URL + "/api/bills";
         public BillCommand() { }
 
         [SlashCommand("testbill", "This is my first slash command")]
         public async Task TestBill(InteractionContext ctx)
         {
+            string responseBody = string.Empty;
+            try
+            {
+                HttpResponseMessage response = await Program.Service.GetAsync(_billApi);
+
+                responseBody = await response.Content.ReadAsStringAsync();
+            } catch (Exception ex)
+            {
+                responseBody = ex.Message;
+            }
+
+            await ctx.DeferAsync();
+
+            var embed = new DiscordEmbedBuilder
+            {
+                Title = _billApi,
+                Description = responseBody,
+                Color = DiscordColor.Green,
+            };
             //await ctx.Channel.SendMessageAsync("I want to check if Yuuka is working.");   // only message
-            await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, 
-                new DiscordInteractionResponseBuilder().WithContent("Just wanna let you know that you did not have any money left."));  // message as response
+            //await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, 
+            //    new DiscordInteractionResponseBuilder().WithContent("Just wanna let you know that you did not have any money left."));  // message as response
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed).WithContent("Just wanna let you know that you did not have any money left.")); // message as response with embed
+
         }
     }
 }
