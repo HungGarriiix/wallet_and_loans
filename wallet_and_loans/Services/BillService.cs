@@ -14,9 +14,9 @@ namespace wallet_and_loans_api.Services
             _walletService = walletService;
         }
 
-        public IEnumerable<Bill> GetBills()
+        public IEnumerable<BillResponseDTO> GetBills()
         {
-            return TestStatic.Bills;
+            return BundleBillsIntoList(TestStatic.Bills);
         }
 
         public Bill GetBillByID(int id)
@@ -24,7 +24,7 @@ namespace wallet_and_loans_api.Services
             return TestStatic.Bills[id];
         }
 
-        public void CreateBill(CreateBillDTO dto, out Bill result)
+        public BillResponseDTO CreateBill(CreateBillDTO dto)
         {
             Wallet wallet = _walletService.GetWalletByID(dto.WalletUsedID);
             Bill bill = new Bill(
@@ -34,7 +34,15 @@ namespace wallet_and_loans_api.Services
                 wallet,
                 TestStatic.UserTest);
             TestStatic.Bills.Add(bill);
-            result = bill;
+            return new BillResponseDTO(bill);
+        }
+
+        private List<BillResponseDTO> BundleBillsIntoList(List<Bill> bills)
+        {
+            List<BillResponseDTO> billsList = new List<BillResponseDTO>();
+            foreach(Bill bill in bills)
+                billsList.Add(new BillResponseDTO(bill));
+            return billsList;
         }
     }
 }

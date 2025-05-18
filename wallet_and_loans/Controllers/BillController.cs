@@ -55,7 +55,7 @@ namespace wallet_and_loans_api.Controllers
         {
             try
             {
-                _billService.CreateBill(dto, out Bill bill);
+                BillResponseDTO bill = _billService.CreateBill(dto);
                 return Created($"/api/bills/{bill.ID}", bill);
             }
             catch (Exception ex)

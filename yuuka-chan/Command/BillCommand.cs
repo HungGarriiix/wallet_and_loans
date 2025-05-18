@@ -23,7 +23,8 @@ namespace yuuka_chan.Command
                 HttpResponseMessage response = await Program.Service.GetAsync(_billApi);
 
                 responseBody = await response.Content.ReadAsStringAsync();
-            } catch (Exception ex)
+            } 
+            catch (Exception ex)
             {
                 responseBody = ex.Message;
             }
@@ -39,8 +40,9 @@ namespace yuuka_chan.Command
             //await ctx.Channel.SendMessageAsync("I want to check if Yuuka is working.");   // only message
             //await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, 
             //    new DiscordInteractionResponseBuilder().WithContent("Just wanna let you know that you did not have any money left."));  // message as response
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed).WithContent("Just wanna let you know that you did not have any money left.")); // message as response with embed
-
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                .AddEmbed(embed)
+                .WithContent("Just wanna let you know that you did not have any money left.")); // message as response with embed
         }
     }
 }
