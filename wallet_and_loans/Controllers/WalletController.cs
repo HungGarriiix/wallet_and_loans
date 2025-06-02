@@ -55,7 +55,7 @@ namespace wallet_and_loans_api.Controllers
         {
             try
             {
-                _walletService.AddWallet(dto, out Wallet wallet);
+                var wallet = _walletService.AddWallet(dto);
                 return Created($"/api/wallets/{wallet.ID}", wallet);
             }
             catch (Exception ex)
@@ -70,8 +70,8 @@ namespace wallet_and_loans_api.Controllers
         {
             try
             {
-                _walletService.UpdateWallet(id, dto, out Wallet result);
-                return Ok(result);
+                var wallet = _walletService.UpdateWallet(id, dto);
+                return Ok(wallet);
             }
             catch (Exception ex) 
             {

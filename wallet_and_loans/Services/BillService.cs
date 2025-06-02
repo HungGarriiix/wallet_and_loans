@@ -1,4 +1,5 @@
 ﻿using System.Xml;
+using wallet_and_loans_api.IBLO;
 using wallet_and_loans_api.IServices;
 using wallet_and_loans_api.Model.DTO.BillDTO;
 using wallet_and_loans_components.Logics;
@@ -7,37 +8,32 @@ namespace wallet_and_loans_api.Services
 {
     public class BillService: IBillService
     {
-        private readonly IWalletService _walletService;
+        private readonly IBillBLO _billBLO;
 
-        public BillService(IWalletService walletService)
+        public BillService(IBillBLO billBLO)
         {
-            _walletService = walletService;
+            _billBLO = billBLO;
         }
 
         public IEnumerable<BillResponseDTO> GetBills()
         {
-            return BundleBillsIntoList(TestStatic.Bills);
+            IEnumerable<Bill> bills = _billBLO.GetBills();
+            return BundleBillsIntoList(bills);
         }
 
-        public Bill GetBillByID(int id)
+        public BillResponseDTO GetBill(int id)
         {
-            return TestStatic.Bills[id];
+            Bill bill = _billBLO.GetBillByID(id);
+            return new BillResponseDTO(bill);
         }
 
         public BillResponseDTO CreateBill(CreateBillDTO dto)
         {
-            Wallet wallet = _walletService.GetWalletByID(dto.WalletUsedID);
-            Bill bill = new Bill(
-                TestStatic.Bills.Count + 1,
-                dto.DateCreated,
-                dto.Description,
-                wallet,
-                TestStatic.UserTest);
-            TestStatic.Bills.Add(bill);
+            Bill bill = _billBLO.CreateBill(dto);
             return new BillResponseDTO(bill);
         }
 
-        private List<BillResponseDTO> BundleBillsIntoList(List<Bill> bills)
+        private List<BillResponseDTO> BundleBillsIntoList(IEnumerable<Bill> bills)
         {
             List<BillResponseDTO> billsList = new List<BillResponseDTO>();
             foreach(Bill bill in bills)

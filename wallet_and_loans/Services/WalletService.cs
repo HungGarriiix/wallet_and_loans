@@ -1,49 +1,52 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using wallet_and_loans_api.IBLO;
 using wallet_and_loans_api.IServices;
 using wallet_and_loans_api.Model.DTO.WalletDTO;
 using wallet_and_loans_components.Logics;
 
 namespace wallet_and_loans_api.Services
 {
-    public class WalletService: IWalletService
+    public class WalletService : IWalletService
     {
-        public WalletService() { }
-
-        public IEnumerable<Wallet> GetWallets()
+        private readonly IWalletBLO _walletBLO;
+        public WalletService(IWalletBLO walletBLO)
         {
-            return TestStatic.UserTest.Wallets;
+            _walletBLO = walletBLO;
         }
 
-        public Wallet GetWalletByID(int id)
+        public IEnumerable<WalletResponseDTO> GetWallets()
         {
-            Wallet wallet = TestStatic.UserTest.Wallets.FirstOrDefault(x => x.ID == id);
-            if (wallet == null)
-                throw new Exception("Wallet not found.");
-            else return wallet;
+            IEnumerable<Wallet> wallets = _walletBLO.GetWallets();
+            return BundleWalletsIntoList(wallets);
         }
 
-        public void AddWallet(CreateWalletDTO dto, out Wallet result)
+        public WalletResponseDTO GetWalletByID(int id)
         {
-            Wallet wallet = new Wallet
-            {
-                ID = TestStatic.UserTest.Wallets.Count + 1,
-                Name = dto.Name,
-                Balance = dto.Balance,
-            };
-            TestStatic.UserTest.AddWallet(wallet);
-            result = wallet;
+            Wallet wallet = _walletBLO.GetWallet(id);
+
+            return new WalletResponseDTO(wallet);
         }
 
-        public void UpdateWallet(int id, UpdateWalletDTO dto, out Wallet result)
+        public WalletResponseDTO AddWallet(CreateWalletDTO dto)
         {
-            Wallet wallet = TestStatic.UserTest.Wallets.FirstOrDefault(x => x.ID == id);
-            if (wallet == null)
-                throw new Exception("Wallet not found.");
-            
-            wallet.Name = dto.Name;
-            wallet.Balance = dto.Balance;
+            Wallet wallet = _walletBLO.CreateWallet(dto);
 
-            result = wallet;
+            return new WalletResponseDTO(wallet);
+        }
+
+        public WalletResponseDTO UpdateWallet(int id, UpdateWalletDTO dto)
+        {
+            Wallet wallet = _walletBLO.UpdateWallet(id, dto);
+
+            return new WalletResponseDTO(wallet);
+        }
+
+        private List<WalletResponseDTO> BundleWalletsIntoList(IEnumerable<Wallet> wallets)
+        {
+            List<WalletResponseDTO> walletsList = new List<WalletResponseDTO>();
+            foreach (Wallet wallet in wallets)
+                walletsList.Add(new WalletResponseDTO(wallet));
+            return walletsList;
         }
     }
 }

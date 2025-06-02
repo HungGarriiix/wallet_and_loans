@@ -6,7 +6,7 @@ namespace wallet_and_loans_api.IServices
     public interface IBillService
     {
         IEnumerable<BillResponseDTO> GetBills();
-        Bill GetBillByID(int id);
+        BillResponseDTO GetBill(int id);
         BillResponseDTO CreateBill(CreateBillDTO dto);
     }
 }

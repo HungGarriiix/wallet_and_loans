@@ -40,7 +40,7 @@ namespace wallet_and_loans_api.Controllers
         {
             try
             {
-                var bill = _billService.GetBillByID(id);
+                var bill = _billService.GetBill(id);
                 return Ok(bill);
             } 
             catch (Exception ex)
@@ -55,7 +55,7 @@ namespace wallet_and_loans_api.Controllers
         {
             try
             {
-                BillResponseDTO bill = _billService.CreateBill(dto);
+                var bill = _billService.CreateBill(dto);
                 return Created($"/api/bills/{bill.ID}", bill);
             }
             catch (Exception ex)
