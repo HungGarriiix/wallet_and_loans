@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using yuuka_chan.Command;
+using System.Diagnostics;
 
 namespace yuuka_chan
 {
@@ -28,6 +29,7 @@ namespace yuuka_chan
         public static SlashCommandsExtension Commands { get; private set; }
 
         public static string URL { get; private set; }
+        public static ulong GuildID { get; private set; }
         public static HttpClient Service { get; private set; } = new HttpClient();
 
         public static async Task Main(string[] args)
@@ -52,20 +54,27 @@ namespace yuuka_chan
 
             // Setup for dev server
             URL = configJson.URL;
+            GuildID = configJson.GuildID;
             HttpClientHandler clientHandler = new HttpClientHandler();
             clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-
+            Console.WriteLine(GuildID);
             // Pass the handler to httpclient(from you are calling api)
             Service = new HttpClient(clientHandler);
 
             Client = new DiscordClient(config);
             var slash = Client.UseSlashCommands();
-            slash.RegisterCommands<BillCommand>();
+            //Client.DeleteGuildApplicationCommandAsync();
+            
+            slash.RegisterCommands<BillCommand>(GuildID);
+            slash.RegisterCommands<WalletCommand>(GuildID);
+            
 
             // Starts connecting (2 hand shake protocol)
             await Client.ConnectAsync();
+            
 
             await Task.Delay(-1);
+            //await slash.RefreshCommands();
         }
     }
 }

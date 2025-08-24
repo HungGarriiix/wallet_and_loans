@@ -11,13 +11,14 @@ using yuuka_chan.Types.Response.Bills;
 
 namespace yuuka_chan.Command
 {
+    [SlashCommandGroup("bill", "For bill uses only")]
     public class BillCommand: ApplicationCommandModule
     {
         private string _billApi = Program.URL + "/api/bills";
         public BillCommand() { }
 
-        [SlashCommand("testbill", "This is my first slash command")]
-        public async Task TestBill(InteractionContext ctx)
+        [SlashCommand("get_all", "Get your bills")]
+        public async Task GetBills(InteractionContext ctx)
         {
             string responseBody = string.Empty;
             BillRes[] bills = [] ;
@@ -34,7 +35,7 @@ namespace yuuka_chan.Command
                 responseBody = ex.Message;
             }
 
-            responseBody = $"**Description**: {bills[0].Description}\n " +
+            responseBody = $"**Description**: {bills[0].Description}\n" +
                 $"**Date**: {bills[0].Date}\n" +
                 $"**Owner**: {bills[0].Owner}\n" +
                 $"**Wallet used**: {bills[0].WalletUsedID.Name} (ID: {bills[0].WalletUsedID.ID})";

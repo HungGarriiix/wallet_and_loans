@@ -38,7 +38,8 @@ namespace wallet_and_loans_api.BLO
                 data.DateCreated,
                 data.Description,
                 wallet,
-                TestStatic.UserTest);
+                TestStatic.UserTest
+            );
             _billRepository.AddBill(bill);
             return bill;
         }

@@ -15,5 +15,7 @@ namespace yuuka_chan
         public string Prefix { get; private set; }
         [JsonProperty("url")]
         public string URL { get; private set; }
+        [JsonProperty("guildId")]
+        public ulong GuildID { get; private set; }
     }
 }
