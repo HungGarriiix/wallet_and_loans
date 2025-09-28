@@ -44,6 +44,7 @@ namespace wallet_and_loans_components.Logics
                     found_item.Quantity += item.Quantity;
                     return;
                 }
+                Items.Add(item);
             }
             catch (Exception ex)
             {
@@ -68,7 +69,8 @@ namespace wallet_and_loans_components.Logics
         {
             BillItem item = Items.Find(x => x.Name == name);
             if (item == null)
-                throw new Exception($"Cannot find item with name '{name}'...");
+                //throw new Exception($"Cannot find item with name '{name}'...");
+                return null;
 
             return item;
         }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using wallet_and_loans_api.IServices;
 using wallet_and_loans_api.Model.DTO.BillDTO;
+using wallet_and_loans_api.Model.DTO.ItemDTO;
 using wallet_and_loans_api.Services;
 using wallet_and_loans_components.Logics;
 
@@ -57,6 +58,21 @@ namespace wallet_and_loans_api.Controllers
             {
                 var bill = _billService.CreateBill(dto);
                 return Created($"/api/bills/{bill.ID}", bill);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // PUT api/<BillController>/{id}/add-items
+        [HttpPut("{id}/add-items")]
+        public IActionResult AddItemsIntoBill(int id, [FromBody] BillItemDTO item)
+        {
+            try
+            {
+                var ans = _billService.AddItemToBill(id, item);
+                return Created("", ans);
             }
             catch (Exception ex)
             {

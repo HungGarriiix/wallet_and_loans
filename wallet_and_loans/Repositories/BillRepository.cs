@@ -37,5 +37,16 @@ namespace wallet_and_loans_api.Repositories
         {
             return TestStatic.Bills.Count;
         }
+
+        public void UpdateBill(Bill bill)
+        {
+            if (bill == null)
+                throw new Exception("Bill cannot be null.");
+            if (!TestStatic.Bills.Any(b => b.ID == bill.ID))
+                throw new Exception("Bill with this ID does not exist.");
+
+            int index = TestStatic.Bills.FindIndex(b => b.ID == bill.ID);
+            TestStatic.Bills[index] = bill; // replace bill
+        }
     }
 }

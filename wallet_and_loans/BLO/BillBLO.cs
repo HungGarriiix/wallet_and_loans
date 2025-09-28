@@ -25,6 +25,10 @@ namespace wallet_and_loans_api.BLO
         public Bill GetBillByID(int id)
         {
             Bill bill = _billRepository.GetBill(id);
+            if (bill == null)
+            {
+                throw new ArgumentException("Bill not found");
+            }
             return bill;
         }
 
@@ -42,6 +46,13 @@ namespace wallet_and_loans_api.BLO
             );
             _billRepository.AddBill(bill);
             return bill;
+        }
+
+        public void AddItemToBill(Bill bill, BillItem item, ref double expectedBalance)
+        {
+            bill.AddItemToBill(item);
+            expectedBalance = bill.WalletUsed.Balance - bill.Total;
+            _billRepository.UpdateBill(bill);
         }
     }
 }

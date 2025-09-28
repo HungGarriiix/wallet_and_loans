@@ -8,5 +8,6 @@ namespace wallet_and_loans_api.IRepositories
         Bill GetBill(int id);
         Bill AddBill(Bill bill);
         int GetBillCount();
+        void UpdateBill(Bill bill);
     }
 }
