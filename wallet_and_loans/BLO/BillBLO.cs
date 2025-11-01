@@ -48,11 +48,15 @@ namespace wallet_and_loans_api.BLO
             return bill;
         }
 
-        public void AddItemToBill(Bill bill, BillItem item, ref double expectedBalance)
+        public void AddItemToBill(Bill bill, BillItem item, ref float expectedBalance)
         {
             bill.AddItemToBill(item);
-            expectedBalance = bill.WalletUsed.Balance - bill.Total;
+            expectedBalance = bill.WalletUsed.Balance - item.TotalPrice;
             _billRepository.UpdateBill(bill);
+            _walletBLO.UpdateWallet(bill.WalletUsed.ID, new Model.DTO.WalletDTO.UpdateWalletDTO
+            {
+                Balance = expectedBalance
+            });
         }
     }
 }

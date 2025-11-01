@@ -37,7 +37,7 @@ namespace wallet_and_loans_api.Services
         public AddItemToBillDTO AddItemToBill(int billId, BillItemDTO item)
         {
             Bill bill = _billBLO.GetBillByID(billId);
-            double expectedBalance = 0.0;
+            float expectedBalance = 0f;
             BillItem billItem = new BillItem(item.Name, item.Quantity, item.TotalPrice); 
 
             _billBLO.AddItemToBill(bill, billItem, ref expectedBalance);

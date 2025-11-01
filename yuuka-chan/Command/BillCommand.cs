@@ -4,6 +4,7 @@ using DSharpPlus.SlashCommands;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -72,7 +73,7 @@ namespace yuuka_chan.Command
                 var payload = new
                 {
                     Description = description,
-                    DateCreated = DateTime.Parse(dateCreated),
+                    DateCreated = DateTime.ParseExact(dateCreated, "dd-MM-yyyy", CultureInfo.InvariantCulture),
                     WalletUsedID = walletID,
                     Owner = ctx.User.Username
                 };
