@@ -397,3 +397,12 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+#config files
+config.json
+.env
+
+# Docker volumes
+wallet-data/
+yuuka-logs/
+config.docker.json
