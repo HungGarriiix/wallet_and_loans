@@ -11,6 +11,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using yuuka_chan.Types.Request.Auth;
 using yuuka_chan.Types.Request.Wallets;
 using yuuka_chan.Types.Response.Bills;
 using yuuka_chan.Types.Response.Wallets;
@@ -143,6 +144,54 @@ namespace yuuka_chan.Command
                 .AddEmbed(embed)
                 .WithContent($"Wallet created.")); // message as response with embed
         }
-        
+
+        [SlashCommand("get_id", "Get user ID")]
+        public async Task TestGetId(InteractionContext ctx)
+        {
+            //Program.Service.DefaultRequestHeaders.Authorization = ;
+            string url = Program.URL + "/api/wallets/test";
+            string result = string.Empty;
+            try
+            {
+                HttpResponseMessage response = await Program.Service.GetAsync(url);
+                result = response.Content.ReadAsStringAsync().Result;
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            await ctx.DeferAsync();
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                .WithContent($"Your user ID is: {ctx.User.Id} and {result}")); // message as response with embed
+        }
+
+        //[SlashCommand("login", "Login user ID")]
+        //public async Task TestLogin(InteractionContext ctx)
+        //{
+        //    //Program.Service.DefaultRequestHeaders.Authorization = ;
+        //    string loginUrl = Program.URL + "/api/wallets/login";
+        //    string result = string.Empty;
+        //    try
+        //    {
+        //        LoginReq loginPayload = new()
+        //        {
+        //            UserName = ctx.User.Id.ToString()
+        //        };
+        //        StringContent content = new StringContent(JsonConvert.SerializeObject(loginPayload), Encoding.UTF8, "application/json");
+        //        HttpResponseMessage response = await Program.Service.PostAsync(loginUrl, content);
+        //        result = response.Content.ReadAsStringAsync().Result;
+        //        response.EnsureSuccessStatusCode();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.Message);
+        //    }
+
+        //    await ctx.DeferAsync();
+        //    await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+        //        .WithContent($"{result}")); // message as response with embed
+        //}
     }
 }

@@ -6,6 +6,16 @@ var builder = WebApplication.CreateBuilder(args);
 APIPreparer.RegisterComponents(builder);
 
 builder.Services.AddAutoMapper(typeof(Program));
+// Session configuration
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(options =>
+{
+    options.Cookie.Name = ".Yuuka-chan.Session";
+    options.IdleTimeout = new TimeSpan(0, 20, 0);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 var app = builder.Build();
 
@@ -20,7 +30,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-
+app.UseSession();
 app.MapControllers();
 
 app.Run();

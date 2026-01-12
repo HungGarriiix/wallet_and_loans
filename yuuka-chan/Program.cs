@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using yuuka_chan.Command;
 using System.Diagnostics;
+using System.Net;
 
 namespace yuuka_chan
 {
@@ -55,8 +56,11 @@ namespace yuuka_chan
             // Setup for dev server
             URL = configJson.URL;
             GuildID = configJson.GuildID;
-            HttpClientHandler clientHandler = new HttpClientHandler();
-            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+            HttpClientHandler clientHandler = new HttpClientHandler()
+            {
+                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; },
+                CookieContainer = new CookieContainer()
+            };
             Console.WriteLine(GuildID);
             // Pass the handler to httpclient(from you are calling api)
             Service = new HttpClient(clientHandler);

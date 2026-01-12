@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using wallet_and_loans_api.IServices;
+using wallet_and_loans_api.Model.DTO.AuthDTO;
 using wallet_and_loans_api.Model.DTO.WalletDTO;
 using wallet_and_loans_components.Logics;
 
@@ -85,6 +89,38 @@ namespace wallet_and_loans_api.Controllers
         public IActionResult Delete(int id)
         {
             return Unauthorized();
+        }
+
+        // Login
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] LoginRequestDTO dto)
+        {
+            try
+            {
+                var claim = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, dto.UserName)
+                };
+
+                var identity = new ClaimsIdentity(claim, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+                HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                HttpContext.Session.SetString("UserID", dto.UserName);
+                return Ok(dto.UserName);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // Test
+        [HttpGet("test")]
+        public IActionResult TestPing()
+        {
+            string? id = HttpContext.Session.GetString("UserID");
+
+            return Ok(new { message = "Ping from WalletController successful!", userID = id });
         }
     }
 }
