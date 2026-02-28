@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using wallet_and_loans_api.Common.Attributes;
 using wallet_and_loans_api.IServices;
 using wallet_and_loans_api.Model.DTO.AuthDTO;
 using wallet_and_loans_api.Model.DTO.WalletDTO;
@@ -70,6 +71,7 @@ namespace wallet_and_loans_api.Controllers
 
         // PATCH api/wallets/:id
         [HttpPatch("{id}")]
+        [UserAuthorization]
         public IActionResult UpdateWallet(int id, [FromBody] UpdateWalletDTO dto)
         {
             try

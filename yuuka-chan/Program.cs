@@ -71,7 +71,6 @@ namespace yuuka_chan
             
             slash.RegisterCommands<BillCommand>(GuildID);
             slash.RegisterCommands<WalletCommand>(GuildID);
-            
 
             // Starts connecting (2 hand shake protocol)
             await Client.ConnectAsync();

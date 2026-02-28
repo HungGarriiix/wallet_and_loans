@@ -166,32 +166,5 @@ namespace yuuka_chan.Command
             await ctx.EditResponseAsync(new DiscordWebhookBuilder()
                 .WithContent($"Your user ID is: {ctx.User.Id} and {result}")); // message as response with embed
         }
-
-        //[SlashCommand("login", "Login user ID")]
-        //public async Task TestLogin(InteractionContext ctx)
-        //{
-        //    //Program.Service.DefaultRequestHeaders.Authorization = ;
-        //    string loginUrl = Program.URL + "/api/wallets/login";
-        //    string result = string.Empty;
-        //    try
-        //    {
-        //        LoginReq loginPayload = new()
-        //        {
-        //            UserName = ctx.User.Id.ToString()
-        //        };
-        //        StringContent content = new StringContent(JsonConvert.SerializeObject(loginPayload), Encoding.UTF8, "application/json");
-        //        HttpResponseMessage response = await Program.Service.PostAsync(loginUrl, content);
-        //        result = response.Content.ReadAsStringAsync().Result;
-        //        response.EnsureSuccessStatusCode();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine(ex.Message);
-        //    }
-
-        //    await ctx.DeferAsync();
-        //    await ctx.EditResponseAsync(new DiscordWebhookBuilder()
-        //        .WithContent($"{result}")); // message as response with embed
-        //}
     }
 }
