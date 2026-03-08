@@ -2,5 +2,6 @@
 {
     public interface IAuthBLO
     {
+        string GenerateToken(string userId);
     }
 }

@@ -11,6 +11,12 @@ APIPreparer.RegisterComponents(builder);
 builder.Services.AddAutoMapper(typeof(Program));
 // Session configuration
 builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(8);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 // Auth
 var jwtConfig = builder.Configuration.GetSection("Jwt");
@@ -43,7 +49,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
+app.UseSession();
 app.MapControllers();
 
 app.Run();
