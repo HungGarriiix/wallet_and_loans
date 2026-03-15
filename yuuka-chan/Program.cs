@@ -61,6 +61,7 @@ namespace yuuka_chan
             var token = await GetTokenAsync(discordUserId);
             var req = new HttpRequestMessage(HttpMethod.Get, url);
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            req.Headers.Add("X-Session-Id", discordUserId.ToString());
             return await Service.SendAsync(req);
         }
 
@@ -69,6 +70,7 @@ namespace yuuka_chan
             var token = await GetTokenAsync(discordUserId);
             var req = new HttpRequestMessage(HttpMethod.Post, url) { Content = body };
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            req.Headers.Add("X-Session-Id", discordUserId.ToString());
             return await Service.SendAsync(req);
         }
 
@@ -77,6 +79,7 @@ namespace yuuka_chan
             var token = await GetTokenAsync(discordUserId);
             var req = new HttpRequestMessage(HttpMethod.Put, url) { Content = body };
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            req.Headers.Add("X-Session-Id", discordUserId.ToString());
             return await Service.SendAsync(req);
         }
 

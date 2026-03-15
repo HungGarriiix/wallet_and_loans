@@ -13,7 +13,7 @@ namespace wallet_and_loans_api.Common.Attributes
             // For example, check if the user is authenticated and has the required roles/permissions
             // If unauthorized, you can set the context.Result to an appropriate result
             // context.Result = new UnauthorizedResult();
-            if (context.HttpContext.Request.Headers["X-Session-Id"].Any())
+            if (!context.HttpContext.Request.Headers["X-Session-Id"].Any())
             {
                 context.Result = new UnauthorizedObjectResult("No");
                 return;
