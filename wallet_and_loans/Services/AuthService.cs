@@ -28,10 +28,11 @@ namespace wallet_and_loans_api.Services
             return user != null;
         }
 
-        //public bool RegisterNewUser(string userId, int platform)
-        //{
-        //    User user = _userBLO.GetUserByContact(userId, (LoginPlatformEnum)platform);
-            
-        //}
+        public bool RegisterNewUser(string userId, int platform)
+        {
+            //User user = _userBLO.GetUserByContact(userId, (LoginPlatformEnum)platform);
+            User user = _userBLO.CreateNewUserByContact(userId, (LoginPlatformEnum)platform);
+            return user != null;
+        }
     }
 }

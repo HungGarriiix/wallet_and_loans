@@ -9,6 +9,11 @@ namespace wallet_and_loans_components.Logics
 {
     public class User
     {
+        public User()
+        {
+
+        }
+
         public User(int id, string username, string password)
         {
             ID = id;

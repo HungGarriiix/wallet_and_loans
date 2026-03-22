@@ -6,5 +6,6 @@ namespace wallet_and_loans_api.IServices
     {
         LoginResponseDTO Login(LoginRequestDTO dto);
         bool CheckUserRegistered(string userId, int platform);
+        bool RegisterNewUser(string userId, int platform);
     }
 }

@@ -63,7 +63,7 @@ namespace yuuka_chan
             var req = new HttpRequestMessage(HttpMethod.Get, url);
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             req.Headers.Add("X-Session-Id", discordUserId.ToString());
-            req.Headers.Add("X-Platform-Id", Constants.PLATFORM_ID);
+            req.Headers.Add("X-Platform-Id", YuukaConstants.PLATFORM_ID);
             return await Service.SendAsync(req);
         }
 
@@ -73,7 +73,7 @@ namespace yuuka_chan
             var req = new HttpRequestMessage(HttpMethod.Post, url) { Content = body };
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             req.Headers.Add("X-Session-Id", discordUserId.ToString());
-            req.Headers.Add("X-Platform-Id", Constants.PLATFORM_ID);
+            req.Headers.Add("X-Platform-Id", YuukaConstants.PLATFORM_ID);
             return await Service.SendAsync(req);
         }
 
@@ -83,7 +83,7 @@ namespace yuuka_chan
             var req = new HttpRequestMessage(HttpMethod.Put, url) { Content = body };
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             req.Headers.Add("X-Session-Id", discordUserId.ToString());
-            req.Headers.Add("X-Platform-Id", Constants.PLATFORM_ID);
+            req.Headers.Add("X-Platform-Id", YuukaConstants.PLATFORM_ID);
             return await Service.SendAsync(req);
         }
 
@@ -125,11 +125,12 @@ namespace yuuka_chan
             
             slash.RegisterCommands<BillCommand>(GuildID);
             slash.RegisterCommands<WalletCommand>(GuildID);
+            slash.RegisterCommands<AuthCommand>(GuildID);
+            slash.RegisterCommands<NonAuthCommand>(GuildID);
 
             // Starts connecting (2 hand shake protocol)
             await Client.ConnectAsync();
             
-
             await Task.Delay(-1);
             //await slash.RefreshCommands();
         }

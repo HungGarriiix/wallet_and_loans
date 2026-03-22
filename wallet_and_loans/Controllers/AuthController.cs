@@ -31,5 +31,33 @@ namespace wallet_and_loans_api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost("register/third")]
+        public IActionResult Register([FromBody] RegisterUserDTO dto)
+        {
+            try
+            {
+                bool isUserRegistered = _authService.CheckUserRegistered(dto.UserId, dto.PlatformId);
+                if (isUserRegistered)
+                {
+                    return BadRequest("User has registered");
+                }
+
+                bool userCreated = _authService.RegisterNewUser(dto.UserId, dto.PlatformId);
+                if (userCreated)
+                {
+                    return Ok("User created");
+                }
+                else
+                {
+                    return BadRequest("Error");
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

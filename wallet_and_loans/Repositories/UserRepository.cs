@@ -13,5 +13,11 @@ namespace wallet_and_loans_api.Repositories
             return TestStatic.Users.FirstOrDefault(u =>
                 u.LoginProfiles.Any(lp => lp.Id == identifier && lp.Platform == platform));
         }
+
+        public User CreateUserByProfile(User user)
+        {
+            TestStatic.Users.Add(user);
+            return user;
+        }
     }
 }

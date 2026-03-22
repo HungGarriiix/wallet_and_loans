@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace yuuka_chan.Common
 {
-    public class Constants
+    public class YuukaConstants
     {
         public static string PLATFORM_ID = "0";
     }
