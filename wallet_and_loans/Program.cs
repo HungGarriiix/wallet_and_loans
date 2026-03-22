@@ -44,7 +44,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    TestStatic.UserTest = new User(1, "Hung", "crazyhung060", "LLL");
+    TestStatic.UserTest = new User(1, "crazyhung060", "crazyhung060");
 }
 
 app.UseHttpsRedirection();

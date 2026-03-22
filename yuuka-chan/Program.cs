@@ -17,6 +17,7 @@ using yuuka_chan.Command;
 using yuuka_chan.Types.Response.Auth;
 using System.Diagnostics;
 using System.Net;
+using yuuka_chan.Common;
 
 namespace yuuka_chan
 {
@@ -62,6 +63,7 @@ namespace yuuka_chan
             var req = new HttpRequestMessage(HttpMethod.Get, url);
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             req.Headers.Add("X-Session-Id", discordUserId.ToString());
+            req.Headers.Add("X-Platform-Id", Constants.PLATFORM_ID);
             return await Service.SendAsync(req);
         }
 
@@ -71,6 +73,7 @@ namespace yuuka_chan
             var req = new HttpRequestMessage(HttpMethod.Post, url) { Content = body };
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             req.Headers.Add("X-Session-Id", discordUserId.ToString());
+            req.Headers.Add("X-Platform-Id", Constants.PLATFORM_ID);
             return await Service.SendAsync(req);
         }
 
@@ -80,6 +83,7 @@ namespace yuuka_chan
             var req = new HttpRequestMessage(HttpMethod.Put, url) { Content = body };
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             req.Headers.Add("X-Session-Id", discordUserId.ToString());
+            req.Headers.Add("X-Platform-Id", Constants.PLATFORM_ID);
             return await Service.SendAsync(req);
         }
 
