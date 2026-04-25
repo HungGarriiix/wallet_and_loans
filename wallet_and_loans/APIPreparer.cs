@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using wallet_and_loans_api.BLO;
+using wallet_and_loans_api.Common.Session;
 using wallet_and_loans_api.IBLO;
 using wallet_and_loans_api.IRepositories;
 using wallet_and_loans_api.IServices;
@@ -12,6 +13,11 @@ namespace wallet_and_loans_api
     {
         public static void RegisterComponents(WebApplicationBuilder builder)
         {
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddSingleton<SessionGet>();
+            builder.Services.AddScoped<ISessionDataProvider, SessionDataProvider>();
+            builder.Services.AddScoped<SessionGet>();
+
             RegisterRepositories(builder);
             RegisterBLOs(builder);
             RegisterServices(builder);

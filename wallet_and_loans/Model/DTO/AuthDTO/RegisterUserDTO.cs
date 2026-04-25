@@ -4,5 +4,6 @@
     {
         public string UserId { get; set; }
         public int PlatformId { get; set; }
+        public string DisplayName { get; set; }
     }
 }

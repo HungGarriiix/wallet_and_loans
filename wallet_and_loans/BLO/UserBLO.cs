@@ -17,7 +17,7 @@ namespace wallet_and_loans_api.BLO
             return _userRepository.GetUserByProfile(identifier, platform);
         }
 
-        public User CreateNewUserByContact(string identifier, LoginPlatformEnum platform)
+        public User CreateNewUserByContact(string identifier, LoginPlatformEnum platform, string displayName)
         {
             User user = null;
             if (this.GetUserByContact(identifier, platform) == null)
@@ -32,6 +32,7 @@ namespace wallet_and_loans_api.BLO
                         {
                             Id = identifier,
                             Platform = platform,
+                            ProfileName = displayName
                         }
                     }
                 };

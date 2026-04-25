@@ -10,5 +10,6 @@ namespace yuuka_chan.Types.Request.Auth
     {
         public string UserId { get; set; }
         public int PlatformId { get; set; }
+        public string DisplayName { get; set; }
     }
 }

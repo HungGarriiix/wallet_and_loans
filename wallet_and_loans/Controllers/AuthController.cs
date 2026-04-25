@@ -43,7 +43,7 @@ namespace wallet_and_loans_api.Controllers
                     return BadRequest("User has registered");
                 }
 
-                bool userCreated = _authService.RegisterNewUser(dto.UserId, dto.PlatformId);
+                bool userCreated = _authService.RegisterNewUser(dto.UserId, dto.PlatformId, dto.DisplayName);
                 if (userCreated)
                 {
                     return Ok("User created");

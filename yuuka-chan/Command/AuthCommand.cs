@@ -25,7 +25,8 @@ namespace yuuka_chan.Command
         public NonAuthCommand() { }
 
         [SlashCommand("register", "Register new user to the system")]
-        public async Task RegisterNewUser(InteractionContext ctx)
+        public async Task RegisterNewUser(InteractionContext ctx,
+            [Option("display_name", "Display name (Optional)")] string? displayName = null)
         {
             await ctx.DeferAsync();
 
@@ -35,7 +36,8 @@ namespace yuuka_chan.Command
                 var payload = new RegisterUserReq
                 {
                     UserId = ctx.User.Id.ToString(),
-                    PlatformId = int.Parse(YuukaConstants.PLATFORM_ID)
+                    PlatformId = int.Parse(YuukaConstants.PLATFORM_ID),
+                    DisplayName = displayName,
                 };
                 StringContent content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await Program.PostAuthorizedAsync(_authApi + "/register/third", ctx.User.Id, content);
