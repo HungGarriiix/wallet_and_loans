@@ -12,7 +12,22 @@ namespace wallet_and_loans_api.Repositories
 
         public List<Wallet> GetAllWallets()
         {
-            return TestStatic.UserTest.Wallets;
+            List<Wallet> wallets = new List<Wallet>();
+            foreach (User user in TestStatic.Users)
+            {
+                wallets.AddRange(user.Wallets);
+            }
+            return wallets;
+        }
+
+        public int GetAllWalletsCount()
+        {
+            return GetAllWallets().Count;
+        }
+
+        public List<Wallet> GetWallets(User user)
+        {
+            return user.Wallets;
         }
 
         public Wallet GetWallet(int id)
@@ -20,16 +35,16 @@ namespace wallet_and_loans_api.Repositories
             return TestStatic.UserTest.Wallets.FirstOrDefault(w => w.ID == id);
         }
 
-        public Wallet AddWallet(Wallet wallet)
+        public Wallet AddWallet(Wallet wallet, User user)
         {
             if (wallet == null)
                 throw new Exception("Wallet cannot be null.");
-            int count = TestStatic.UserTest.Wallets.Count;
-            if (TestStatic.UserTest.Wallets.Any(w => w.ID == count + 1))
+            int count = GetAllWalletsCount();
+            if (user.Wallets.Any(w => w.ID == count + 1))
                 throw new Exception("Wallet with this ID already exists.");
             
             wallet.ID = count + 1;
-            TestStatic.UserTest.AddWallet(wallet);
+            user.AddWallet(wallet);
             return wallet;
         }
 

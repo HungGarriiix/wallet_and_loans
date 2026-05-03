@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using wallet_and_loans_api.BLO;
+using wallet_and_loans_api.Common;
 using wallet_and_loans_api.Common.Session;
 using wallet_and_loans_api.IBLO;
 using wallet_and_loans_api.IRepositories;
 using wallet_and_loans_api.IServices;
 using wallet_and_loans_api.Repositories;
 using wallet_and_loans_api.Services;
+using wallet_and_loans_components.Logics;
 
 namespace wallet_and_loans_api
 {
@@ -22,6 +24,26 @@ namespace wallet_and_loans_api
             RegisterBLOs(builder);
             RegisterServices(builder);
             RegisterControllers(builder);
+        }
+
+        public static void RegisterMiddlewares(WebApplication app)
+        {
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+                TestStatic.UserTest = new User(1, "crazyhung060", "crazyhung060");
+            }
+
+            app.UseHttpsRedirection();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseSession();
+            app.MapControllers();
+
+            // Custom middlewares
+            app.UseMiddleware<AuthenticationMiddleware>();
         }
 
         public static void RegisterControllers(WebApplicationBuilder builder)

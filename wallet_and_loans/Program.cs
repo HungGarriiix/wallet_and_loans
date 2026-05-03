@@ -10,6 +10,7 @@ APIPreparer.RegisterComponents(builder);
 
 builder.Services.AddAutoMapper(typeof(Program));
 // Session configuration
+
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -40,18 +41,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    TestStatic.UserTest = new User(1, "crazyhung060", "crazyhung060");
-}
-
-app.UseHttpsRedirection();
-
-app.UseAuthentication();
-app.UseAuthorization();
-app.UseSession();
-app.MapControllers();
+APIPreparer.RegisterMiddlewares(app);
 
 app.Run();

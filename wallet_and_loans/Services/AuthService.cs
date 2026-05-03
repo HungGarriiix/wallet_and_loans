@@ -1,3 +1,4 @@
+using wallet_and_loans_api.Common;
 using wallet_and_loans_api.IBLO;
 using wallet_and_loans_api.IServices;
 using wallet_and_loans_api.Model.DTO.AuthDTO;
@@ -28,13 +29,21 @@ namespace wallet_and_loans_api.Services
             return user != null;
         }
 
-        public U
-
         public bool RegisterNewUser(string userId, int platform, string displayName)
         {
             //User user = _userBLO.GetUserByContact(userId, (LoginPlatformEnum)platform);
             User user = _userBLO.CreateNewUserByContact(userId, (LoginPlatformEnum)platform, displayName);
             return user != null;
+        }
+
+        public UserInfo GetUserInfo(string userId, string platform)
+        {
+            User user = _authBLO.GetUserInfo(userId, platform);
+
+            return new UserInfo
+            {
+                UserId = user.ID.ToString(),
+            };
         }
     }
 }

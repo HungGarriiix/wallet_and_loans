@@ -2,11 +2,11 @@
 
 namespace wallet_and_loans_api.Common
 {
-    public class BaseController
+    public class BaseService
     {
         protected readonly ISessionDataProvider _sessionDataProvider;
 
-        public BaseController(ISessionDataProvider sessionDataProvider)
+        public BaseService(ISessionDataProvider sessionDataProvider)
         {
             _sessionDataProvider = sessionDataProvider;
         }

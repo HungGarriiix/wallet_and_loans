@@ -12,6 +12,11 @@ namespace wallet_and_loans_api.BLO
             _userRepository = userRepository;
         }
 
+        public User GetUserById(int id)
+        {
+            return _userRepository.GetUserById(id);
+        }
+
         public User GetUserByContact(string identifier, LoginPlatformEnum platform)
         {
             return _userRepository.GetUserByProfile(identifier, platform);

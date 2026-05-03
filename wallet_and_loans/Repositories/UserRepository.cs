@@ -8,6 +8,11 @@ namespace wallet_and_loans_api.Repositories
     {
         public UserRepository() { }
 
+        public User GetUserById(int id)
+        {
+            return TestStatic.Users.FirstOrDefault(u => u.ID == id);
+        }
+
         public User GetUserByProfile(string identifier, LoginPlatformEnum platform)
         {
             return TestStatic.Users.FirstOrDefault(u =>

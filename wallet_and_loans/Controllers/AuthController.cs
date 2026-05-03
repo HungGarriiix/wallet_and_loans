@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using wallet_and_loans_api.IServices;
 using wallet_and_loans_api.Model.DTO.AuthDTO;
 
@@ -18,6 +19,7 @@ namespace wallet_and_loans_api.Controllers
         // POST api/auth/login
         // Body: { "userName": "<discord_user_id>" }
         // Returns: { "token": "<jwt>" }
+        [AllowAnonymous]
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequestDTO dto)
         {
@@ -32,6 +34,7 @@ namespace wallet_and_loans_api.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost("register/third")]
         public IActionResult Register([FromBody] RegisterUserDTO dto)
         {

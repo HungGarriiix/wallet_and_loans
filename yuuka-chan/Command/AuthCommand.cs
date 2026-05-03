@@ -37,7 +37,7 @@ namespace yuuka_chan.Command
                 {
                     UserId = ctx.User.Id.ToString(),
                     PlatformId = int.Parse(YuukaConstants.PLATFORM_ID),
-                    DisplayName = displayName,
+                    DisplayName = displayName == null ? ctx.User.Username : displayName,
                 };
                 StringContent content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await Program.PostAuthorizedAsync(_authApi + "/register/third", ctx.User.Id, content);
