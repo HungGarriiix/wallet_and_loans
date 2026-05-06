@@ -1,6 +1,13 @@
-﻿namespace wallet_and_loans_api.IServices
+﻿using wallet_and_loans_api.Common;
+using wallet_and_loans_api.Model.DTO.AuthDTO;
+
+namespace wallet_and_loans_api.IServices
 {
     public interface IAuthService
     {
+        LoginResponseDTO Login(LoginRequestDTO dto);
+        bool CheckUserRegistered(string userId, int platform);
+        bool RegisterNewUser(string userId, int platform, string displayName);
+        UserInfo GetUserInfo(string userId, string platform);
     }
 }

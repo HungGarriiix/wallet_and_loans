@@ -6,9 +6,9 @@ namespace wallet_and_loans_api.IBLO
 {
     public interface IWalletBLO
     {
-        public IEnumerable<Wallet> GetWallets();
+        public IEnumerable<Wallet> GetWallets(User user);
         public Wallet GetWallet(int id);
-        public Wallet CreateWallet(CreateWalletDTO data);
+        public Wallet CreateWallet(CreateWalletDTO data, User user);
         public Wallet UpdateWallet(int id, UpdateWalletDTO data);
     }
 }

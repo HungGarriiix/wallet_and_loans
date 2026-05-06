@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using wallet_and_loans_api.BLO;
+using wallet_and_loans_api.Common;
+using wallet_and_loans_api.Common.Session;
 using wallet_and_loans_api.IBLO;
 using wallet_and_loans_api.IRepositories;
 using wallet_and_loans_api.IServices;
 using wallet_and_loans_api.Repositories;
 using wallet_and_loans_api.Services;
+using wallet_and_loans_components.Logics;
 
 namespace wallet_and_loans_api
 {
@@ -12,10 +15,35 @@ namespace wallet_and_loans_api
     {
         public static void RegisterComponents(WebApplicationBuilder builder)
         {
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddSingleton<SessionGet>();
+            builder.Services.AddScoped<ISessionDataProvider, SessionDataProvider>();
+            builder.Services.AddScoped<SessionGet>();
+
             RegisterRepositories(builder);
             RegisterBLOs(builder);
             RegisterServices(builder);
             RegisterControllers(builder);
+        }
+
+        public static void RegisterMiddlewares(WebApplication app)
+        {
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+                TestStatic.UserTest = new User(1, "crazyhung060", "crazyhung060");
+            }
+
+            app.UseHttpsRedirection();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseSession();
+            app.MapControllers();
+
+            // Custom middlewares
+            app.UseMiddleware<AuthenticationMiddleware>();
         }
 
         public static void RegisterControllers(WebApplicationBuilder builder)
@@ -42,6 +70,8 @@ namespace wallet_and_loans_api
 
             builder.Services.AddScoped<IWalletService, WalletService>();
             builder.Services.AddScoped<IBillService, BillService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            //builder.Services.AddScoped< IUserService, UserService>();
 
             //var serviceAssembly = typeof(Program).Assembly; // Use a known type instead of Startup
 
@@ -70,6 +100,8 @@ namespace wallet_and_loans_api
 
             builder.Services.AddScoped<IWalletBLO, WalletBLO>();
             builder.Services.AddScoped<IBillBLO, BillBLO>();
+            builder.Services.AddScoped<IAuthBLO, AuthBLO>(); 
+            builder.Services.AddScoped<IUserBLO, UserBLO>();
         }
 
         public static void RegisterRepositories(WebApplicationBuilder builder)
@@ -81,6 +113,7 @@ namespace wallet_and_loans_api
 
             builder.Services.AddScoped<IWalletRepository, WalletRepository>();
             builder.Services.AddScoped<IBillRepository, BillRepository>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
         }
 
         public static void RegisterAutoMapper(WebApplicationBuilder builder)

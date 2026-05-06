@@ -7,25 +7,32 @@ using System.Xml.Linq;
 
 namespace wallet_and_loans_components.Logics
 {
-    public class User : Debtor
+    public class User
     {
-        public User(int id, string name, string username, string password)
-            : base(id, name)
+        public User()
         {
+
+        }
+
+        public User(int id, string username, string password)
+        {
+            ID = id;
             Username = username;
             Password = password;
         }
 
         // get from db
-        public User(int id, string name, string username, string password, List<Contact> contacts, List<Debtor> loaned, List<Wallet> wallets)
-            : base(id, name, contacts)
+        public User(int id, string username, string password, List<Contact> contacts, List<Debtor> loaned, List<Wallet> wallets)
         {
+            ID = id;
             SavedLoanedList = loaned;
             Wallets = wallets;
             Username = username;
             Password = password;
         }
 
+        public int ID { get; set; }
+        public List<LoginProfile> LoginProfiles { get; set; } = new List<LoginProfile>();
         public List<Debtor> SavedLoanedList { get; set; } = new List<Debtor>();
         public List<Wallet> Wallets { get; set; } = new List<Wallet>();
         public string Username { get; set; } = string.Empty;

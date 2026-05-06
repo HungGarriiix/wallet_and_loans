@@ -10,7 +10,14 @@ APIPreparer.RegisterComponents(builder);
 
 builder.Services.AddAutoMapper(typeof(Program));
 // Session configuration
+
 builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(8);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 // Auth
 var jwtConfig = builder.Configuration.GetSection("Jwt");
@@ -34,16 +41,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    TestStatic.UserTest = new User(1, "Hung", "crazyhung060", "LLL");
-}
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-app.MapControllers();
+APIPreparer.RegisterMiddlewares(app);
 
 app.Run();
