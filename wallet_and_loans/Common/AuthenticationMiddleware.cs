@@ -53,7 +53,10 @@ namespace wallet_and_loans_api.Common
                 {
                     // Optionally, you can add the user ID to the HttpContext for later use in controllers
                     var userInfo = authService.GetUserInfo(userId, platform);
-                    context.Items["UserId"] = userInfo.UserId;
+                    if (userInfo != null)
+                    {
+                        context.Items["UserId"] = userInfo.UserId;
+                    }
                 }
             }
 

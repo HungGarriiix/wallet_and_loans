@@ -46,10 +46,18 @@ namespace wallet_and_loans_api.BLO
         {
             if (!string.IsNullOrEmpty(platform))
             {
-                //int platformInt = int.Parse(platform);
-                return _userBLO.GetUserByContact(userId, (LoginPlatformEnum)Enum.Parse(typeof(LoginPlatformEnum), platform));
+                if (Enum.TryParse<LoginPlatformEnum>(platform, out var platformEnum))
+                {
+                    return _userBLO.GetUserByContact(userId, platformEnum);
+                }
             }
-            return _userBLO.GetUserById(int.Parse(userId));
+            
+            if (int.TryParse(userId, out var id))
+            {
+                return _userBLO.GetUserById(id);
+            }
+
+            return null;
         }
     }
 }

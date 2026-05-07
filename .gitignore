@@ -399,3 +399,7 @@ FodyWeavers.xsd
 *.sln.iml
 
 yuuka-chan/config.json
+yuuka-chan/.env
+.env
+
+.agents/

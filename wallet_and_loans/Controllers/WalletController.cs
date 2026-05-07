@@ -120,7 +120,14 @@ namespace wallet_and_loans_api.Controllers
         [HttpGet("test")]
         public IActionResult TestPing()
         {
-            string? id = HttpContext.Session.GetString("UserID");
+            // First try items (set by AuthenticationMiddleware)
+            string? id = HttpContext.Items["UserId"] as string;
+            
+            // Fallback to session
+            if (string.IsNullOrEmpty(id))
+            {
+                id = HttpContext.Session.GetString("UserID");
+            }
 
             return Ok(new { message = "Ping from WalletController successful!", userID = id });
         }

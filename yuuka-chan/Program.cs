@@ -10,6 +10,7 @@ using DSharpPlus;
 using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -89,13 +90,7 @@ namespace yuuka_chan
 
         public static async Task Main(string[] args)
         {
-            // JSON reader
-            var json = string.Empty;
-            using (var fs = File.OpenRead("config.json"))
-            using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
-                json = await sr.ReadToEndAsync();
-
-            var configJson = JsonConvert.DeserializeObject<ConfigJSON>(json);
+            var configJson = await ConfigJSON.ReadConfig();
 
             // Discord client main configuration (for 2 hand shake protocol)
             var config = new DiscordConfiguration()
@@ -120,13 +115,14 @@ namespace yuuka_chan
             Service = new HttpClient(clientHandler);
 
             Client = new DiscordClient(config);
+            Interactivity = Client.UseInteractivity(new InteractivityConfiguration());
+
             var slash = Client.UseSlashCommands();
             //Client.DeleteGuildApplicationCommandAsync();
             
             slash.RegisterCommands<BillCommand>(GuildID);
             slash.RegisterCommands<WalletCommand>(GuildID);
             slash.RegisterCommands<AuthCommand>(GuildID);
-            slash.RegisterCommands<NonAuthCommand>(GuildID);
 
             // Starts connecting (2 hand shake protocol)
             await Client.ConnectAsync();
