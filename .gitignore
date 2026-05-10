@@ -403,3 +403,4 @@ yuuka-chan/.env
 .env
 
 .agents/
+.github/copilot-instructions.md

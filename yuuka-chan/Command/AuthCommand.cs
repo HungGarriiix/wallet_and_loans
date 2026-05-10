@@ -1,21 +1,18 @@
-﻿using DSharpPlus.Entities;
+﻿using System.Text;
+using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
 using yuuka_chan.Common;
 using yuuka_chan.Types.Request.Auth;
-using yuuka_chan.Types.Response.Bills;
 
 namespace yuuka_chan.Command
 {
     [SlashCommandGroup("auth", "Authentication and User Management")]
     public class AuthCommand: ApplicationCommandModule
+    {
+    }
+
+    public class NonAuthCommand: ApplicationCommandModule
     {
         private string _authApi => Program.URL + "/api/auth";
 
