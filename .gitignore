@@ -399,3 +399,8 @@ FodyWeavers.xsd
 *.sln.iml
 
 yuuka-chan/config.json
+yuuka-chan/.env
+.env
+
+.agents/
+.github/copilot-instructions.md

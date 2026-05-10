@@ -39,6 +39,7 @@ namespace wallet_and_loans_api.Services
         public UserInfo GetUserInfo(string userId, string platform)
         {
             User user = _authBLO.GetUserInfo(userId, platform);
+            if (user == null) return null;
 
             return new UserInfo
             {
