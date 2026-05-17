@@ -16,9 +16,9 @@ namespace wallet_and_loans_api.BLO
             this._walletBLO = walletBLO;
         }
 
-        public IEnumerable<Bill> GetBills()
+        public IEnumerable<Bill> GetBills(User user)
         {
-            List<Bill> bills = _billRepository.GetBills();
+            List<Bill> bills = _billRepository.GetBills(user);
             return bills;
         }
 
@@ -32,7 +32,7 @@ namespace wallet_and_loans_api.BLO
             return bill;
         }
 
-        public Bill CreateBill(CreateBillDTO data)
+        public Bill CreateBill(CreateBillDTO data, User user)
         {
             Wallet wallet = _walletBLO.GetWallet(data.WalletUsedID);
 
@@ -42,7 +42,7 @@ namespace wallet_and_loans_api.BLO
                 data.DateCreated,
                 data.Description,
                 wallet,
-                TestStatic.UserTest
+                user
             );
             _billRepository.AddBill(bill);
             return bill;

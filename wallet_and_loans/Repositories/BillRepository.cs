@@ -10,9 +10,9 @@ namespace wallet_and_loans_api.Repositories
 
         }
 
-        public List<Bill> GetBills()
+        public List<Bill> GetBills(User user)
         {
-            return TestStatic.Bills;
+            return TestStatic.Bills.Where(b => b.Owner.ID == user.ID).ToList();
         }
 
         public Bill GetBill(int id)
@@ -24,11 +24,9 @@ namespace wallet_and_loans_api.Repositories
         {
             if (bill == null)
                 throw new Exception("Bill cannot be null.");
-            int count = TestStatic.Bills.Count;
-            if (TestStatic.Bills.Any(b => b.ID == count + 1))
-                throw new Exception("Bill with this ID already exists.");
 
-            bill.ID = count + 1;
+            TestStatic.BillCounter++;
+            bill.ID = TestStatic.BillCounter;
             TestStatic.Bills.Add(bill);
             return bill;
         }
