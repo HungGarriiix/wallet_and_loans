@@ -32,7 +32,6 @@ namespace wallet_and_loans_api
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-                TestStatic.UserTest = new User(1, "crazyhung060", "crazyhung060");
             }
 
             app.UseHttpsRedirection();
@@ -71,7 +70,7 @@ namespace wallet_and_loans_api
             builder.Services.AddScoped<IWalletService, WalletService>();
             builder.Services.AddScoped<IBillService, BillService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
-            //builder.Services.AddScoped< IUserService, UserService>();
+            builder.Services.AddScoped<IUserService, UserService>();
 
             //var serviceAssembly = typeof(Program).Assembly; // Use a known type instead of Startup
 
@@ -100,7 +99,7 @@ namespace wallet_and_loans_api
 
             builder.Services.AddScoped<IWalletBLO, WalletBLO>();
             builder.Services.AddScoped<IBillBLO, BillBLO>();
-            builder.Services.AddScoped<IAuthBLO, AuthBLO>(); 
+            builder.Services.AddScoped<IAuthBLO, AuthBLO>();
             builder.Services.AddScoped<IUserBLO, UserBLO>();
         }
 

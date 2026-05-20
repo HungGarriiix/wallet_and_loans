@@ -14,8 +14,14 @@
         // for session data
         public string UserId
         {
-            get => _httpContextAccessor.HttpContext.Items["UserId"].ToString() ?? string.Empty;
-            set => _httpContextAccessor.HttpContext.Items["UserId"] = value;
+            get => _httpContextAccessor.HttpContext?.Items["UserId"]?.ToString() ?? string.Empty;
+            set
+            {
+                if (_httpContextAccessor.HttpContext != null)
+                {
+                    _httpContextAccessor.HttpContext.Items["UserId"] = value;
+                }
+            }
         }
     }
 }
