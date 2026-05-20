@@ -79,7 +79,7 @@ namespace wallet_and_loans_api.Controllers
                 var wallet = _walletService.UpdateWallet(id, dto);
                 return Ok(wallet);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -91,45 +91,6 @@ namespace wallet_and_loans_api.Controllers
         public IActionResult Delete(int id)
         {
             return Unauthorized();
-        }
-
-        // Login
-        [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginRequestDTO dto)
-        {
-            try
-            {
-                var claim = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, dto.UserName)
-                };
-
-                var identity = new ClaimsIdentity(claim, CookieAuthenticationDefaults.AuthenticationScheme);
-                var principal = new ClaimsPrincipal(identity);
-                HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-                HttpContext.Session.SetString("UserID", dto.UserName);
-                return Ok(dto.UserName);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        // Test
-        [HttpGet("test")]
-        public IActionResult TestPing()
-        {
-            // First try items (set by AuthenticationMiddleware)
-            string? id = HttpContext.Items["UserId"] as string;
-            
-            // Fallback to session
-            if (string.IsNullOrEmpty(id))
-            {
-                id = HttpContext.Session.GetString("UserID");
-            }
-
-            return Ok(new { message = "Ping from WalletController successful!", userID = id });
         }
     }
 }

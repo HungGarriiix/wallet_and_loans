@@ -7,7 +7,7 @@ namespace wallet_and_loans_api.BLO
     public class UserBLO: IUserBLO
     {
         private readonly IUserRepository _userRepository;
-        public UserBLO(IUserRepository userRepository) 
+        public UserBLO(IUserRepository userRepository)
         {
             _userRepository = userRepository;
         }
@@ -27,10 +27,10 @@ namespace wallet_and_loans_api.BLO
             User user = null;
             if (this.GetUserByContact(identifier, platform) == null)
             {
-                int seed = TestStatic.Users.Count + 1;
+                TestStatic.UserCounter++;
                 User newUser = new User()
                 {
-                    ID = seed,
+                    ID = TestStatic.UserCounter,
                     LoginProfiles = new List<LoginProfile>()
                     {
                         new LoginProfile()

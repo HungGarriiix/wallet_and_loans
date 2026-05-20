@@ -6,9 +6,9 @@ namespace wallet_and_loans_api.IBLO
 {
     public interface IBillBLO
     {
-        public IEnumerable<Bill> GetBills();
+        public IEnumerable<Bill> GetBills(User user);
         public Bill GetBillByID(int id);
-        public Bill CreateBill(CreateBillDTO data);
+        public Bill CreateBill(CreateBillDTO data, User user);
         public void AddItemToBill(Bill bill, BillItem item, ref float expectedBalance);
     }
 }
