@@ -1,4 +1,5 @@
-﻿using wallet_and_loans_api.IBLO;
+﻿using System.Runtime.CompilerServices;
+using wallet_and_loans_api.IBLO;
 using wallet_and_loans_api.IRepositories;
 using wallet_and_loans_api.Model.DTO.WalletDTO;
 using wallet_and_loans_components.Logics;
@@ -14,9 +15,9 @@ namespace wallet_and_loans_api.BLO
             _walletRepository = walletRepository;
         }
 
-        public IEnumerable<Wallet> GetWallets()
+        public IEnumerable<Wallet> GetWallets(User user)
         {
-            return TestStatic.UserTest.Wallets;
+            return _walletRepository.GetWallets(user);
         }
 
         public Wallet GetWallet(int id)
@@ -28,7 +29,7 @@ namespace wallet_and_loans_api.BLO
             return wallet;
         }
 
-        public Wallet CreateWallet(CreateWalletDTO data)
+        public Wallet CreateWallet(CreateWalletDTO data, User user)
         {
             Wallet wallet = new Wallet
             {
@@ -36,7 +37,7 @@ namespace wallet_and_loans_api.BLO
                 Balance = data.Balance,
             };
 
-            wallet = _walletRepository.AddWallet(wallet);
+            wallet = _walletRepository.AddWallet(wallet, user);
             return wallet;
         }
 

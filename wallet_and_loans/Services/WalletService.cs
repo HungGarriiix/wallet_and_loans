@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using wallet_and_loans_api.Common;
+using wallet_and_loans_api.Common.Session;
 using wallet_and_loans_api.IBLO;
 using wallet_and_loans_api.IServices;
 using wallet_and_loans_api.Model.DTO.WalletDTO;
@@ -6,17 +8,22 @@ using wallet_and_loans_components.Logics;
 
 namespace wallet_and_loans_api.Services
 {
-    public class WalletService : IWalletService
+    public class WalletService : BaseService, IWalletService
     {
         private readonly IWalletBLO _walletBLO;
-        public WalletService(IWalletBLO walletBLO)
+        private readonly IUserBLO _userBLO;
+
+        public WalletService(IWalletBLO walletBLO, IUserBLO userBLO, ISessionDataProvider sessionDataProvider)
+            : base(sessionDataProvider)
         {
             _walletBLO = walletBLO;
+            _userBLO = userBLO;
         }
 
         public IEnumerable<WalletResponseDTO> GetWallets()
         {
-            IEnumerable<Wallet> wallets = _walletBLO.GetWallets();
+            User user = _userBLO.GetUserById(Convert.ToInt32(_sessionDataProvider.UserId));
+            IEnumerable<Wallet> wallets = _walletBLO.GetWallets(user);
             return BundleWalletsIntoList(wallets);
         }
 
@@ -29,7 +36,8 @@ namespace wallet_and_loans_api.Services
 
         public WalletResponseDTO AddWallet(CreateWalletDTO dto)
         {
-            Wallet wallet = _walletBLO.CreateWallet(dto);
+            User user = _userBLO.GetUserById(Convert.ToInt32(_sessionDataProvider.UserId));
+            Wallet wallet = _walletBLO.CreateWallet(dto, user);
 
             return new WalletResponseDTO(wallet);
         }

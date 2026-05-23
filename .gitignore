@@ -406,3 +406,9 @@ config.json
 wallet-data/
 yuuka-logs/
 config.docker.json
+yuuka-chan/config.json
+yuuka-chan/.env
+.env
+
+.agents/
+.github/copilot-instructions.md

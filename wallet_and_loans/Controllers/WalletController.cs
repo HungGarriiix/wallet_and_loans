@@ -1,5 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using wallet_and_loans_api.Common.Attributes;
 using wallet_and_loans_api.IServices;
+using wallet_and_loans_api.Model.DTO.AuthDTO;
 using wallet_and_loans_api.Model.DTO.WalletDTO;
 using wallet_and_loans_components.Logics;
 
@@ -66,6 +71,7 @@ namespace wallet_and_loans_api.Controllers
 
         // PATCH api/wallets/:id
         [HttpPatch("{id}")]
+        [UserAuthorization]
         public IActionResult UpdateWallet(int id, [FromBody] UpdateWalletDTO dto)
         {
             try
@@ -73,7 +79,7 @@ namespace wallet_and_loans_api.Controllers
                 var wallet = _walletService.UpdateWallet(id, dto);
                 return Ok(wallet);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }

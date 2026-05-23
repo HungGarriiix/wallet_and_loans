@@ -23,41 +23,46 @@ namespace yuuka_chan.Command
         [SlashCommand("get_all", "Get your bills")]
         public async Task GetBills(InteractionContext ctx)
         {
+            await ctx.DeferAsync();
+
             string responseBody = string.Empty;
-            BillRes[] bills = [] ;
+            BillRes[] bills = [];
             try
             {
-                HttpResponseMessage response = await Program.Service.GetAsync(_billApi);
+                HttpResponseMessage response = await Program.GetAuthorizedAsync(_billApi, ctx.User.Id);
+                response.EnsureSuccessStatusCode();
 
                 responseBody = await response.Content.ReadAsStringAsync();
                 bills = JsonConvert.DeserializeObject<BillRes[]>(responseBody);
-                if (bills == null) throw new Exception();
-            } 
+                if (bills == null || bills.Length == 0) throw new Exception("No bills found.");
+            }
             catch (Exception ex)
             {
-                responseBody = ex.Message;
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Error: {ex.Message}"));
+                return;
             }
 
-            responseBody = $"**Description**: {bills[0].Description}\n" +
-                $"**Date**: {bills[0].Date}\n" +
-                $"**Owner**: {bills[0].Owner}\n" +
-                $"**Wallet used**: {bills[0].WalletUsedID.Name} (ID: {bills[0].WalletUsedID.ID})";
+            responseBody = string.Empty;
+            foreach (var bill in bills)
+            {
+                responseBody += $"## Bill #{bill.ID}\n" +
+                    $"**Description**: {bill.Description}\n" +
+                    $"**Date**: {bill.Date}\n" +
+                    $"**Owner**: {bill.Owner}\n" +
+                    $"**Wallet**: {bill.WalletUsedID?.Name} (ID: {bill.WalletUsedID?.ID})\n" +
+                    "------------------------------------\n";
+            }
 
             var embed = new DiscordEmbedBuilder
             {
-                Title = $"Bill: {bills[0].ID}",
+                Title = "Your bills",
                 Description = responseBody,
                 Color = DiscordColor.Green,
             };
 
-            await ctx.DeferAsync();
-            
-            //await ctx.Channel.SendMessageAsync("I want to check if Yuuka is working.");   // only message
-            //await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, 
-            //    new DiscordInteractionResponseBuilder().WithContent("Just wanna let you know that you did not have any money left."));  // message as response
             await ctx.EditResponseAsync(new DiscordWebhookBuilder()
                 .AddEmbed(embed)
-                .WithContent($"Just wanna let you know that you did not have any money left: {_billApi}")); // message as response with embed
+                .WithContent("Bill list."));
         }
 
         [SlashCommand("create", "Create a new bill")]
@@ -66,6 +71,8 @@ namespace yuuka_chan.Command
             [Option("date_created", "Date the bill is made. Format: DD-MM-YYYY")] string dateCreated,
             [Option("wallet_id", "The wallet ID you want to use")] long walletID)
         {
+            await ctx.DeferAsync();
+
             string responseBody = string.Empty;
             BillRes createdBill = new BillRes();
             try
@@ -78,7 +85,7 @@ namespace yuuka_chan.Command
                     Owner = ctx.User.Username
                 };
                 StringContent content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await Program.Service.PostAsync(_billApi + "/create", content);
+                HttpResponseMessage response = await Program.PostAuthorizedAsync(_billApi + "/create", ctx.User.Id, content);
                 response.EnsureSuccessStatusCode();
                 responseBody = await response.Content.ReadAsStringAsync();
                 createdBill = JsonConvert.DeserializeObject<BillRes>(responseBody);
@@ -91,17 +98,16 @@ namespace yuuka_chan.Command
                 $"\n**Description**: {createdBill.Description}\n" +
                 $"**Date**: {createdBill.Date}\n" +
                 $"**Owner**: {createdBill.Owner}\n" +
-                $"**Wallet used**: {createdBill.WalletUsedID.Name}";
+                $"**Wallet used**: {createdBill.WalletUsedID?.Name}";
             var embed = new DiscordEmbedBuilder
             {
                 Title = $"Create a new bill",
                 Description = responseBody,
                 Color = DiscordColor.Green,
             };
-            await ctx.DeferAsync();
             await ctx.EditResponseAsync(new DiscordWebhookBuilder()
                 .AddEmbed(embed)
-                .WithContent($"Create a new bill.")); // message as response with embed
+                .WithContent($"Create a new bill."));
         }
 
         [SlashCommand("add-item", "Add item to bill")]
@@ -111,6 +117,8 @@ namespace yuuka_chan.Command
             [Option("item_quantity", "The quantity of the item")] long itemQuantity,
             [Option("item_total_value", "The total value of the item")] double itemTotalValue)
         {
+            await ctx.DeferAsync();
+
             string responseBody = string.Empty;
             AddNewBillItemRes res = new AddNewBillItemRes();
             try
@@ -122,7 +130,7 @@ namespace yuuka_chan.Command
                     TotalPrice = itemTotalValue
                 };
                 StringContent content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await Program.Service.PutAsync(string.Format(_billGetApi, billID) + "/add-items", content);
+                HttpResponseMessage response = await Program.PutAuthorizedAsync(string.Format(_billGetApi, billID) + "/add-items", ctx.User.Id, content);
                 response.EnsureSuccessStatusCode();
                 responseBody = await response.Content.ReadAsStringAsync();
                 res = JsonConvert.DeserializeObject<AddNewBillItemRes>(responseBody);
@@ -145,10 +153,9 @@ namespace yuuka_chan.Command
                 Description = responseBody,
                 Color = DiscordColor.Green,
             };
-            await ctx.DeferAsync();
             await ctx.EditResponseAsync(new DiscordWebhookBuilder()
                 .AddEmbed(embed)
-                .WithContent($"Add item to bill.")); // message as response with embed
+                .WithContent($"Add item to bill."));
         }
     }
 }
