@@ -33,10 +33,26 @@ namespace wallet_and_loans_api.Services
             return BundleBillsIntoList(bills);
         }
 
-        public BillResponseDTO GetBill(int id)
+        public BillDetailsResponseDTO GetBill(int id)
         {
             Bill bill = _billBLO.GetBillByID(id);
-            return new BillResponseDTO(bill);
+            BillDetailsResponseDTO billDetails = new BillDetailsResponseDTO
+            {
+                ID = bill.ID,
+                Date = bill.Date,
+                Description = bill.Description,
+                WalletUsedID = bill.WalletUsed,
+                Owner = bill.Owner.Username,
+                Items = bill.Items.Select(item => new BillItemResponseDTO()
+                    {
+                        Name = item.Name,
+                        Quantity = item.Quantity,
+                        SinglePrice = item.SinglePrice,
+                        TotalPrice = item.TotalPrice,
+                    }
+                ).ToList()
+            };
+            return billDetails;
         }
 
         public BillResponseDTO CreateBill(CreateBillDTO dto)

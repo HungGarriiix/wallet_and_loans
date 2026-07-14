@@ -2,6 +2,7 @@
 using wallet_and_loans_api.IBLO;
 using wallet_and_loans_api.IRepositories;
 using wallet_and_loans_api.Model.DTO.BillDTO;
+using wallet_and_loans_api.Model.DTO.WalletDTO;
 using wallet_and_loans_components.Logics;
 
 namespace wallet_and_loans_api.BLO
@@ -53,10 +54,13 @@ namespace wallet_and_loans_api.BLO
             bill.AddItemToBill(item);
             expectedBalance = bill.WalletUsed.Balance - item.TotalPrice;
             _billRepository.UpdateBill(bill);
-            _walletBLO.UpdateWallet(bill.WalletUsed.ID, new Model.DTO.WalletDTO.UpdateWalletDTO
+            bill.WalletUsed.Balance = expectedBalance;
+            UpdateWalletDTO wallet = new UpdateWalletDTO
             {
+                Name = bill.WalletUsed.Name,
                 Balance = expectedBalance
-            });
+            };
+            _walletBLO.UpdateWallet(bill.WalletUsed.ID, wallet);
         }
     }
 }

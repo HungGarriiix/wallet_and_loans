@@ -157,5 +157,54 @@ namespace yuuka_chan.Command
                 .AddEmbed(embed)
                 .WithContent($"Add item to bill."));
         }
+
+        [SlashCommand("get", "See a bill details")]
+        public async Task GetBill(InteractionContext ctx,
+            [Option("bill_id", "The bill ID you want to see")] long billID)
+        {
+            await ctx.DeferAsync();
+
+            string responseBody = string.Empty;
+            BillDetailsRes res = new BillDetailsRes();
+            try
+            {
+                HttpResponseMessage response = await Program.GetAuthorizedAsync(string.Format(_billGetApi, billID), ctx.User.Id);
+                response.EnsureSuccessStatusCode();
+                responseBody = await response.Content.ReadAsStringAsync();
+                res = JsonConvert.DeserializeObject<BillDetailsRes>(responseBody);
+            }
+            catch (Exception ex)
+            {
+                responseBody = ex.Message;
+            }
+            responseBody = $"## Bill #{res.ID}\n" +
+                $"**Description**: {res.Description}\n" +
+                $"**Date**: {res.Date}\n" +
+                $"**Owner**: {res.Owner}\n" +
+                $"**Wallet used**: {res.WalletUsedID?.Name}\n";
+            if (res.Items == null || res.Items.Count == 0)
+            {
+                responseBody += "**Items**: No items.\n";
+            }
+            else
+            {
+                responseBody += $"**Items**: \n" +
+                "--------------------------\n";
+                foreach (BillItemRes item in res.Items)
+                {
+                    responseBody += $" - {item.Name} (x{item.Quantity}): {item.TotalPrice}\n";
+                }
+            }
+
+            var embed = new DiscordEmbedBuilder
+            {
+                Title = $"Add item to bill",
+                Description = responseBody,
+                Color = DiscordColor.Green,
+            };
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                .AddEmbed(embed)
+                .WithContent($"Add item to bill."));
+        }
     }
 }
