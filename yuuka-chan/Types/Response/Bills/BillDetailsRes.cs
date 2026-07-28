@@ -19,6 +19,8 @@ namespace yuuka_chan.Types.Response.Bills
         public WalletSumRes WalletUsedID { get; private set; }
         [JsonProperty("owner")]
         public string Owner { get; private set; }
+        [JsonProperty("total")]
+        public float Total { get; set; }
         [JsonProperty("items")]
         public List<BillItemRes> Items { get; private set; }
     }

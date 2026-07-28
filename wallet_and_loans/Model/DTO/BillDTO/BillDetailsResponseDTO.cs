@@ -15,6 +15,7 @@ namespace wallet_and_loans_api.Model.DTO.BillDTO
         public string Description { get; set; }
         public Wallet WalletUsedID { get; set; }
         public string Owner { get; set; }
+        public float Total { get; set; }
         public List<BillItemResponseDTO> Items { get; set; }
     }
 }

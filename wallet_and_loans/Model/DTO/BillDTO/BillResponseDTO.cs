@@ -11,6 +11,7 @@ namespace wallet_and_loans_api.Model.DTO.BillDTO
             Description = bill.Description;
             WalletUsedID = bill.WalletUsed;
             Owner = bill.Owner.Username;
+            Total = bill.Total;
         }
 
         public int ID { get; private set; }
@@ -18,5 +19,6 @@ namespace wallet_and_loans_api.Model.DTO.BillDTO
         public string Description { get; private set; }
         public Wallet WalletUsedID { get; private set; }
         public string Owner { get; private set; }
+        public float Total { get; set; }
     }
 }

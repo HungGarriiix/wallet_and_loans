@@ -49,6 +49,7 @@ namespace yuuka_chan.Command
                     $"**Description**: {bill.Description}\n" +
                     $"**Date**: {bill.Date}\n" +
                     $"**Owner**: {bill.Owner}\n" +
+                    $"**Total**: {bill.Total}\n" +
                     $"**Wallet**: {bill.WalletUsedID?.Name} (ID: {bill.WalletUsedID?.ID})\n" +
                     "------------------------------------\n";
             }
@@ -181,6 +182,7 @@ namespace yuuka_chan.Command
                 $"**Description**: {res.Description}\n" +
                 $"**Date**: {res.Date}\n" +
                 $"**Owner**: {res.Owner}\n" +
+                $"**Total**: {res.Total}\n" +
                 $"**Wallet used**: {res.WalletUsedID?.Name}\n";
             if (res.Items == null || res.Items.Count == 0)
             {
