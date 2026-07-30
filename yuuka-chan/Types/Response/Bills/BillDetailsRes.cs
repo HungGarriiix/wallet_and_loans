@@ -1,14 +1,13 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using yuuka_chan.Types.Response.Items;
 using yuuka_chan.Types.Response.Wallets;
 
 namespace yuuka_chan.Types.Response.Bills
 {
-    public class BillRes
+    public class BillDetailsRes
     {
         [JsonProperty("id")]
         public int ID { get; private set; }
@@ -22,5 +21,7 @@ namespace yuuka_chan.Types.Response.Bills
         public string Owner { get; private set; }
         [JsonProperty("total")]
         public float Total { get; set; }
+        [JsonProperty("items")]
+        public List<BillItemRes> Items { get; private set; }
     }
 }
