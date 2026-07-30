@@ -9,7 +9,7 @@ using System.Xml.Linq;
 
 namespace wallet_and_loans_test
 {
-    public class LoanTest
+    public class DebtTest
     {
         Debtor person1;
         Debt loan1;

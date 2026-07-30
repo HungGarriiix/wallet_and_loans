@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace wallet_and_loans_test
 {
-    public class PersonTest
+    public class DebtorTest
     {
         Debtor person1;
         Contact contact_inPerson;
