@@ -10,5 +10,6 @@ namespace wallet_and_loans_api.IBLO
         public Bill GetBillByID(int id);
         public Bill CreateBill(CreateBillDTO data, User user);
         public void AddItemToBill(Bill bill, BillItem item, ref float expectedBalance);
+        public void UpdateBill(int targetBillId, Bill updateBill, ref Bill result);
     }
 }

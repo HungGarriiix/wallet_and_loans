@@ -1,4 +1,4 @@
-﻿using System.Xml;
+using System.Xml;
 using wallet_and_loans_api.Common;
 using wallet_and_loans_api.Common.Session;
 using wallet_and_loans_api.IBLO;
@@ -13,12 +13,14 @@ namespace wallet_and_loans_api.Services
     {
         private readonly IBillBLO _billBLO;
         private readonly IUserBLO _userBLO;
+        private readonly IWalletBLO _walletBLO;
 
-        public BillService(IBillBLO billBLO, IUserBLO userBLO, ISessionDataProvider sessionDataProvider)
+        public BillService(IBillBLO billBLO, IUserBLO userBLO, IWalletBLO walletBLO, ISessionDataProvider sessionDataProvider)
             : base(sessionDataProvider)
         {
             _billBLO = billBLO;
             _userBLO = userBLO;
+            _walletBLO = walletBLO;
         }
 
         public IEnumerable<BillResponseDTO> GetBills()
@@ -88,6 +90,21 @@ namespace wallet_and_loans_api.Services
                 ExpectedBalance = expectedBalance,
                 BillItems = BundleBillItemsIntoList(bill.Items)
             };
+        }
+
+        public BillResponseDTO UpdateBill(int id, UpdateBillDTO dto)
+        {
+            Wallet wallet = _walletBLO.GetWallet(dto.WalletUsedId);
+            Bill updatedBill = new Bill
+            {
+                Date = dto.Date,
+                Description = dto.Description,
+                WalletUsed = wallet
+            };
+            Bill result = new Bill();
+
+            _billBLO.UpdateBill(id, updatedBill, ref result);
+            return new BillResponseDTO(result);
         }
 
         private List<BillResponseDTO> BundleBillsIntoList(IEnumerable<Bill> bills)

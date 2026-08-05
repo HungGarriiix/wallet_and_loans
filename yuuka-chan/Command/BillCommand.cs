@@ -6,8 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using yuuka_chan.Types.Request.Bill;
 using yuuka_chan.Types.Response.Bills;
 using yuuka_chan.Types.Response.Items;
 
@@ -207,6 +209,54 @@ namespace yuuka_chan.Command
             await ctx.EditResponseAsync(new DiscordWebhookBuilder()
                 .AddEmbed(embed)
                 .WithContent($"Add item to bill."));
+        }
+
+        [SlashCommand("update", "Update a bill")]
+        public async Task UpdateBill(InteractionContext ctx,
+            [Option("bill_id", "The bill ID you want to update")] long billID,
+            [Option("description", "The description of the bill")] string description,
+            [Option("date_created", "Date the bill is made. Format: DD-MM-YYYY")] string dateCreated,
+            [Option("wallet_id", "The wallet ID you want to use")] long walletID)
+        {
+            await ctx.DeferAsync();
+
+            string responseBody = string.Empty;
+            UpdateBillReq body = new UpdateBillReq
+            {
+                Description = description,
+                Date = DateTime.ParseExact(dateCreated, "dd-MM-yyyy", CultureInfo.InvariantCulture),
+                WalletUsedId = walletID
+            };
+            BillRes res = new BillRes();
+
+            try
+            {
+                var jsonContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await Program.PatchAuthorizedAsync(string.Format(_billGetApi, billID) + "/update", ctx.User.Id, jsonContent);
+                response.EnsureSuccessStatusCode();
+                responseBody = await response.Content.ReadAsStringAsync();
+                res = JsonConvert.DeserializeObject<BillRes>(responseBody);
+            }
+            catch (Exception ex)
+            {
+                responseBody = ex.Message;
+            }
+            responseBody = $"## Updated Bill #{res.ID}\n" +
+                $"**Description**: {res.Description}\n" +
+                $"**Date**: {res.Date}\n" +
+                $"**Owner**: {res.Owner}\n" +
+                $"**Total**: {res.Total}\n" +
+                $"**Wallet used**: {res.WalletUsedID?.Name}\n";
+
+            var embed = new DiscordEmbedBuilder
+            {
+                Title = $"Updated Bill #{res.ID}",
+                Description = responseBody,
+                Color = DiscordColor.Green,
+            };
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                .AddEmbed(embed)
+                .WithContent($"Updated bill."));
         }
     }
 }

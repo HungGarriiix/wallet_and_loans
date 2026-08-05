@@ -73,6 +73,16 @@ namespace yuuka_chan
             return await Service.SendAsync(req);
         }
 
+        public static async Task<HttpResponseMessage> PatchAuthorizedAsync(string url, ulong discordUserId, HttpContent body)
+        {
+            var token = await GetTokenAsync(discordUserId);
+            var req = new HttpRequestMessage(HttpMethod.Patch, url) { Content = body };
+            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            req.Headers.Add("X-Session-Id", discordUserId.ToString());
+            req.Headers.Add("X-Platform-Id", YuukaConstants.PLATFORM_ID);
+            return await Service.SendAsync(req);
+        }
+
         public static async Task Main(string[] args)
         {
             var configJson = await LoadConfigAsync();

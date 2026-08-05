@@ -62,5 +62,39 @@ namespace wallet_and_loans_api.BLO
             };
             _walletBLO.UpdateWallet(bill.WalletUsed.ID, wallet);
         }
+
+        public void UpdateBill(int targetBillId, Bill updateBill, ref Bill result)
+        {
+            Bill targetBill = _billRepository.GetBill(targetBillId);
+            if (targetBill == null)
+            {
+                throw new ArgumentException("Bill not found");
+            }
+
+            targetBill.Date = updateBill.Date;
+            targetBill.Description = updateBill.Description;
+
+            // return money to the wallet used in the original bill
+            float originalBillTotal = targetBill.Total;
+            updateBill.WalletUsed.Balance -= originalBillTotal;
+            targetBill.WalletUsed.Balance += originalBillTotal;
+
+            _walletBLO.UpdateWallet(targetBill.WalletUsed.ID, new UpdateWalletDTO
+            {
+                Name = targetBill.WalletUsed.Name,
+                Balance = targetBill.WalletUsed.Balance
+            });
+            _walletBLO.UpdateWallet(updateBill.WalletUsed.ID, new UpdateWalletDTO
+            {
+                Name = updateBill.WalletUsed.Name,
+                Balance = updateBill.WalletUsed.Balance
+            });
+
+            // Update the new wallet
+            targetBill.WalletUsed = updateBill.WalletUsed;
+
+            _billRepository.UpdateBill(targetBill);
+            result = targetBill;
+        }
     }
 }

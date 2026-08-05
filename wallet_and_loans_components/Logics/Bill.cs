@@ -18,6 +18,11 @@ namespace wallet_and_loans_components.Logics
             Owner = owner;
         }
 
+        public Bill()
+        {
+
+        }
+
         public Bill(int id, DateTime date, string description, List<BillItem> items, Wallet wallet, User owner)
             : this(id, date, description, wallet, owner)
         {
