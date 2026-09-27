@@ -258,5 +258,44 @@ namespace yuuka_chan.Command
                 .AddEmbed(embed)
                 .WithContent($"Updated bill."));
         }
+
+        [SlashCommand("clear-items", "Remove all items from a bill and refund the wallet")]
+        public async Task ClearBillItems(InteractionContext ctx,
+            [Option("bill_id", "The bill ID you want to clear items from")] long billID)
+        {
+            await ctx.DeferAsync();
+
+            string responseBody = string.Empty;
+            BillDetailsRes res = new BillDetailsRes();
+            try
+            {
+                HttpResponseMessage response = await Program.DeleteAuthorizedAsync(string.Format(_billGetApi, billID) + "/delete-item", ctx.User.Id);
+                responseBody = await response.Content.ReadAsStringAsync();
+                if (!response.IsSuccessStatusCode) throw new Exception(responseBody);
+                res = JsonConvert.DeserializeObject<BillDetailsRes>(responseBody);
+            }
+            catch (Exception ex)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Error: {ex.Message}"));
+                return;
+            }
+            responseBody = $"## Bill #{res.ID}\n" +
+                $"**Description**: {res.Description}\n" +
+                $"**Date**: {res.Date}\n" +
+                $"**Owner**: {res.Owner}\n" +
+                $"**Total**: {res.Total}\n" +
+                $"**Wallet used**: {res.WalletUsedID?.Name}\n" +
+                "**Items**: No items. Use `/bill add-item` to add them again.\n";
+
+            var embed = new DiscordEmbedBuilder
+            {
+                Title = $"Cleared items of Bill #{res.ID}",
+                Description = responseBody,
+                Color = DiscordColor.Green,
+            };
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                .AddEmbed(embed)
+                .WithContent($"Cleared bill items."));
+        }
     }
 }

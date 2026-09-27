@@ -96,5 +96,51 @@ namespace wallet_and_loans_api.BLO
             _billRepository.UpdateBill(targetBill);
             result = targetBill;
         }
+
+        public void DeleteItemFromBill(int billId, int itemIndex)
+        {
+            Bill bill = _billRepository.GetBill(billId);
+            if (bill == null)
+            {
+                throw new ArgumentException("Bill not found");
+            }
+            if (itemIndex < 0 || itemIndex >= bill.Items.Count)
+            {
+                throw new ArgumentOutOfRangeException("Item index is out of range");
+            }
+            BillItem itemToRemove = bill.Items[itemIndex];
+            float expectedBalance = bill.WalletUsed.Balance + itemToRemove.TotalPrice;
+            bill.RemoveItemFromBill(itemToRemove.Name);
+            _billRepository.UpdateBill(bill);
+            // Update the wallet balance
+            bill.WalletUsed.Balance = expectedBalance;
+            UpdateWalletDTO wallet = new UpdateWalletDTO
+            {
+                Name = bill.WalletUsed.Name,
+                Balance = expectedBalance
+            };
+            _walletBLO.UpdateWallet(bill.WalletUsed.ID, wallet);
+        }
+
+        public Bill DeleteAllBillItems(int billId)
+        {
+            Bill bill = _billRepository.GetBill(billId);
+            if (bill == null)
+            {
+                throw new ArgumentException("Bill not found");
+            }
+            float expectedBalance = bill.WalletUsed.Balance + bill.Total;
+            bill.ClearAllItems();
+            _billRepository.UpdateBill(bill);
+            // Update the wallet balance
+            bill.WalletUsed.Balance = expectedBalance;
+            UpdateWalletDTO wallet = new UpdateWalletDTO
+            {
+                Name = bill.WalletUsed.Name,
+                Balance = expectedBalance
+            };
+            _walletBLO.UpdateWallet(bill.WalletUsed.ID, wallet);
+            return bill;
+        }
     }
 }

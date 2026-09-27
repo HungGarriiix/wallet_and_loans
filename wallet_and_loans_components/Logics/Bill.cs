@@ -80,6 +80,11 @@ namespace wallet_and_loans_components.Logics
             return item;
         }
 
+        public void ClearAllItems()
+        {
+            Items.Clear();
+        }
+
         private void DeductWalletBalance()
         {
             WalletUsed.DeductBalance(Total);

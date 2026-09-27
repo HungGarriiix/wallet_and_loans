@@ -94,6 +94,21 @@ namespace wallet_and_loans_api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        // DELETE api/bills/{id}/delete-item
+        [HttpDelete("{id}/delete-item")]
+        public IActionResult DeleteAllBillItem(int id)
+        {
+            try
+            {
+                var deletedBill = _billService.DeleteAllBillItem(id);
+                return Ok(deletedBill);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         /*
                 // PUT api/<BillController>/5
                 [HttpPut("{id}")]

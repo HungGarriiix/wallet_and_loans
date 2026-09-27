@@ -107,6 +107,23 @@ namespace wallet_and_loans_api.Services
             return new BillResponseDTO(result);
         }
 
+        public BillDetailsResponseDTO DeleteAllBillItem(int id)
+        {
+            Bill bill = _billBLO.DeleteAllBillItems(id);
+            BillDetailsResponseDTO billDetail = new BillDetailsResponseDTO()
+            {
+                ID = bill.ID,
+                Date = bill.Date,
+                Description = bill.Description,
+                WalletUsedID = bill.WalletUsed,
+                Owner = bill.Owner.Username,
+                Total = bill.Total,
+                Items = null //for now
+            };
+
+            return billDetail;
+        }
+
         private List<BillResponseDTO> BundleBillsIntoList(IEnumerable<Bill> bills)
         {
             List<BillResponseDTO> billsList = new List<BillResponseDTO>();
