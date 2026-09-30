@@ -1,4 +1,5 @@
 ﻿using wallet_and_loans_api.Model.DTO.ItemDTO;
+using wallet_and_loans_components.Common.Enums;
 using wallet_and_loans_components.Logics;
 
 namespace wallet_and_loans_api.Model.DTO.BillDTO
@@ -16,6 +17,7 @@ namespace wallet_and_loans_api.Model.DTO.BillDTO
         public Wallet WalletUsedID { get; set; }
         public string Owner { get; set; }
         public float Total { get; set; }
+        public BillType Type { get; set; }
         public List<BillItemResponseDTO> Items { get; set; }
     }
 }

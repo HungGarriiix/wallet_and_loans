@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using wallet_and_loans_components.Common.Enums;
 
 namespace wallet_and_loans_components.Logics
 {
@@ -38,6 +39,7 @@ namespace wallet_and_loans_components.Logics
         public float Total { get { return Items.Sum(item => item.TotalPrice); } }
         public int NumberOfItems { get { return Items.Count; } }
         public int NumberOfQuantities { get { return Items.Sum(x => x.Quantity); } }
+        public BillType Type { get; set; } = BillType.EXPENSE;
 
         public void AddItemToBill(BillItem item)
         {

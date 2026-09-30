@@ -3,6 +3,7 @@ using wallet_and_loans_api.IBLO;
 using wallet_and_loans_api.IRepositories;
 using wallet_and_loans_api.Model.DTO.BillDTO;
 using wallet_and_loans_api.Model.DTO.WalletDTO;
+using wallet_and_loans_components.Common.Enums;
 using wallet_and_loans_components.Logics;
 
 namespace wallet_and_loans_api.BLO
@@ -45,6 +46,7 @@ namespace wallet_and_loans_api.BLO
                 wallet,
                 user
             );
+            bill.Type = BillType.EXPENSE;
             _billRepository.AddBill(bill);
             return bill;
         }
@@ -140,6 +142,38 @@ namespace wallet_and_loans_api.BLO
                 Balance = expectedBalance
             };
             _walletBLO.UpdateWallet(bill.WalletUsed.ID, wallet);
+            return bill;
+        }
+
+        public Bill AddBalance(AddBalanceDTO data, User user, ref float expectedBalance)
+        {
+            if (data.Amount <= 0)
+            {
+                throw new ArgumentException("Amount must be greater than 0");
+            }
+            Wallet wallet = _walletBLO.GetWallet(data.WalletUsedID);
+
+            Bill bill = new Bill(
+                _billRepository.GetBillCount(),
+                data.DateCreated,
+                data.Description,
+                wallet,
+                user
+            );
+            bill.Type = BillType.ADDITION;
+            // the received amount is stored as a single item so it shows up in the bill history
+            string itemName = string.IsNullOrWhiteSpace(data.Description) ? "Balance increment" : data.Description;
+            bill.AddItemToBill(new BillItem(itemName, 1, data.Amount));
+            _billRepository.AddBalanceBill(bill);
+
+            // increase the wallet balance
+            expectedBalance = wallet.Balance + data.Amount;
+            wallet.Balance = expectedBalance;
+            _walletBLO.UpdateWallet(wallet.ID, new UpdateWalletDTO
+            {
+                Name = wallet.Name,
+                Balance = expectedBalance
+            });
             return bill;
         }
     }

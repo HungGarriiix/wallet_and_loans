@@ -1,4 +1,5 @@
 ﻿using wallet_and_loans_api.IRepositories;
+using wallet_and_loans_components.Common.Enums;
 using wallet_and_loans_components.Logics;
 
 namespace wallet_and_loans_api.Repositories
@@ -45,6 +46,19 @@ namespace wallet_and_loans_api.Repositories
 
             int index = TestStatic.Bills.FindIndex(b => b.ID == bill.ID);
             TestStatic.Bills[index] = bill; // replace bill
+        }
+
+        public Bill AddBalanceBill(Bill bill)
+        {
+            if (bill == null)
+                throw new Exception("Bill cannot be null.");
+            if (bill.Type != BillType.ADDITION)
+                throw new Exception("Only ADDITION bills can be stored as balance increments.");
+
+            TestStatic.BillCounter++;
+            bill.ID = TestStatic.BillCounter;
+            TestStatic.Bills.Add(bill);
+            return bill;
         }
     }
 }

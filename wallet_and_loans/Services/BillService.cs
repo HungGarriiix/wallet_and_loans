@@ -46,6 +46,7 @@ namespace wallet_and_loans_api.Services
                 WalletUsedID = bill.WalletUsed,
                 Owner = bill.Owner.Username,
                 Total = bill.Total,
+                Type = bill.Type,
                 Items = bill.Items.Select(item => new BillItemResponseDTO()
                     {
                         Name = item.Name,
@@ -118,10 +119,39 @@ namespace wallet_and_loans_api.Services
                 WalletUsedID = bill.WalletUsed,
                 Owner = bill.Owner.Username,
                 Total = bill.Total,
+                Type = bill.Type,
                 Items = null //for now
             };
 
             return billDetail;
+        }
+
+        public AddBalanceResponseDTO AddBalance(AddBalanceDTO dto)
+        {
+            string userId = _sessionDataProvider.UserId;
+            if (string.IsNullOrEmpty(userId)) throw new Exception("Unauthorized: User session not found.");
+
+            User user = _userBLO.GetUserById(Convert.ToInt32(userId));
+            if (user == null) throw new Exception("User not found.");
+
+            float expectedBalance = 0f;
+            Bill bill = _billBLO.AddBalance(dto, user, ref expectedBalance);
+
+            return new AddBalanceResponseDTO
+            {
+                Bill = new BillDetailsResponseDTO
+                {
+                    ID = bill.ID,
+                    Date = bill.Date,
+                    Description = bill.Description,
+                    WalletUsedID = bill.WalletUsed,
+                    Owner = bill.Owner.Username,
+                    Total = bill.Total,
+                    Type = bill.Type,
+                    Items = BundleBillItemsIntoList(bill.Items)
+                },
+                ExpectedBalance = expectedBalance
+            };
         }
 
         private List<BillResponseDTO> BundleBillsIntoList(IEnumerable<Bill> bills)

@@ -13,5 +13,6 @@ namespace wallet_and_loans_api.IBLO
         public void UpdateBill(int targetBillId, Bill updateBill, ref Bill result);
         public void DeleteItemFromBill(int billId, int itemIndex);
         public Bill DeleteAllBillItems(int billId);
+        public Bill AddBalance(AddBalanceDTO data, User user, ref float expectedBalance);
     }
 }
