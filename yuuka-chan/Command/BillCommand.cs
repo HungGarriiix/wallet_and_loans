@@ -335,8 +335,8 @@ namespace yuuka_chan.Command
                 $"**Description**: {res.Bill.Description}\n" +
                 $"**Date**: {res.Bill.Date}\n" +
                 $"**Owner**: {res.Bill.Owner}\n" +
-                $"**Amount**: +{res.Bill.Total}\n" +
-                $"**Wallet**: {res.Bill.WalletUsedID?.Name} (ID: {res.Bill.WalletUsedID?.ID})\n" +
+                $"**Amount increased**: + {res.Bill.Total}\n" +
+                $"**Wallet**: {res.Bill.WalletUsedID?.Name}\n" +
                 $"***Balance***: {res.ExpectedBalance}";
 
             var embed = new DiscordEmbedBuilder

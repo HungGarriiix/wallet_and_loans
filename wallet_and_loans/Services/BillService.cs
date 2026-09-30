@@ -147,8 +147,7 @@ namespace wallet_and_loans_api.Services
                     WalletUsedID = bill.WalletUsed,
                     Owner = bill.Owner.Username,
                     Total = bill.Total,
-                    Type = bill.Type,
-                    Items = BundleBillItemsIntoList(bill.Items)
+                    Type = bill.Type
                 },
                 ExpectedBalance = expectedBalance
             };
