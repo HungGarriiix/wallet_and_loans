@@ -79,17 +79,47 @@ namespace wallet_and_loans_api.Controllers
                 return BadRequest(ex.Message);
             }
         }
-/*
-        // PUT api/<BillController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+
+        // PATCH api/bills/{id}/update
+        [HttpPatch("{id}/update")]
+        public IActionResult UpdateBill(int id, [FromBody] UpdateBillDTO dto)
         {
+            try
+            {
+                var updatedBill = _billService.UpdateBill(id, dto);
+                return Ok(updatedBill);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // DELETE api/<BillController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        // DELETE api/bills/{id}/delete-item
+        [HttpDelete("{id}/delete-item")]
+        public IActionResult DeleteAllBillItem(int id)
         {
-        }*/
+            try
+            {
+                var deletedBill = _billService.DeleteAllBillItem(id);
+                return Ok(deletedBill);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        /*
+                // PUT api/<BillController>/5
+                [HttpPut("{id}")]
+                public void Put(int id, [FromBody] string value)
+                {
+                }
+
+                // DELETE api/<BillController>/5
+                [HttpDelete("{id}")]
+                public void Delete(int id)
+                {
+                }*/
     }
 }
