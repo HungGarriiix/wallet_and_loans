@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.VisualBasic;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,6 +22,10 @@ namespace yuuka_chan.Types.Response.Bills
         public string Owner { get; private set; }
         [JsonProperty("total")]
         public float Total { get; set; }
+        [JsonProperty("type")]
+        public int Type { get; private set; }
+        [JsonProperty("typeName")]
+        public string TypeName { get; set; }
         [JsonProperty("items")]
         public List<BillItemRes> Items { get; private set; }
     }

@@ -11,5 +11,6 @@ namespace wallet_and_loans_api.IServices
         AddItemToBillDTO AddItemToBill(int billId, BillItemDTO item);
         BillResponseDTO UpdateBill(int id, UpdateBillDTO dto);
         BillDetailsResponseDTO DeleteAllBillItem(int id);
+        AddBalanceResponseDTO AddBalance(AddBalanceDTO dto);
     }
 }

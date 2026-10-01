@@ -109,6 +109,21 @@ namespace wallet_and_loans_api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        // POST api/bills/add-balance
+        [HttpPost("add-balance")]
+        public IActionResult AddBalance([FromBody] AddBalanceDTO dto)
+        {
+            try
+            {
+                var ans = _billService.AddBalance(dto);
+                return Created($"/api/bills/{ans.Bill.ID}", ans);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         /*
                 // PUT api/<BillController>/5
                 [HttpPut("{id}")]
