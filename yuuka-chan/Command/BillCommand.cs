@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using wallet_and_loans_components.Common.Enums;
 using yuuka_chan.Types.Request.Bill;
 using yuuka_chan.Types.Response.Bills;
 using yuuka_chan.Types.Response.Items;
@@ -47,11 +48,13 @@ namespace yuuka_chan.Command
             responseBody = string.Empty;
             foreach (var bill in bills)
             {
+                string balanceOperator = bill.Total == 0 ? "" : (bill.Type == (int)BillType.EXPENSE ? " + " : " - ");
                 responseBody += $"## Bill #{bill.ID}\n" +
                     $"**Description**: {bill.Description}\n" +
                     $"**Date**: {bill.Date}\n" +
                     $"**Owner**: {bill.Owner}\n" +
-                    $"**Total**: {bill.Total}\n" +
+                    $"**Type**: {bill.TypeName}\n" +
+                    $"**Total**: {balanceOperator}{bill.Total}\n" +
                     $"**Wallet**: {bill.WalletUsedID?.Name} (ID: {bill.WalletUsedID?.ID})\n" +
                     "------------------------------------\n";
             }
@@ -180,11 +183,13 @@ namespace yuuka_chan.Command
             {
                 responseBody = ex.Message;
             }
+            string balanceOperator = res.Total == 0 ? "" : (res.Type == (int)BillType.EXPENSE ? " + " : " - ");
             responseBody = $"## Bill #{res.ID}\n" +
                 $"**Description**: {res.Description}\n" +
                 $"**Date**: {res.Date}\n" +
                 $"**Owner**: {res.Owner}\n" +
-                $"**Total**: {res.Total}\n" +
+                $"**Type**: {res.TypeName}\n" +
+                $"**Total**: {balanceOperator}{res.Total}\n" +
                 $"**Wallet used**: {res.WalletUsedID?.Name}\n";
             if (res.Items == null || res.Items.Count == 0)
             {
