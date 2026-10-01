@@ -53,6 +53,7 @@ namespace wallet_and_loans_api.BLO
 
         public void AddItemToBill(Bill bill, BillItem item, ref float expectedBalance)
         {
+            EnsureBillIsExpense(bill);
             bill.AddItemToBill(item);
             expectedBalance = bill.WalletUsed.Balance - item.TotalPrice;
             _billRepository.UpdateBill(bill);
@@ -72,6 +73,7 @@ namespace wallet_and_loans_api.BLO
             {
                 throw new ArgumentException("Bill not found");
             }
+            EnsureBillIsExpense(targetBill);
 
             targetBill.Date = updateBill.Date;
             targetBill.Description = updateBill.Description;
@@ -106,6 +108,7 @@ namespace wallet_and_loans_api.BLO
             {
                 throw new ArgumentException("Bill not found");
             }
+            EnsureBillIsExpense(bill);
             if (itemIndex < 0 || itemIndex >= bill.Items.Count)
             {
                 throw new ArgumentOutOfRangeException("Item index is out of range");
@@ -131,6 +134,7 @@ namespace wallet_and_loans_api.BLO
             {
                 throw new ArgumentException("Bill not found");
             }
+            EnsureBillIsExpense(bill);
             float expectedBalance = bill.WalletUsed.Balance + bill.Total;
             bill.ClearAllItems();
             _billRepository.UpdateBill(bill);
@@ -175,6 +179,15 @@ namespace wallet_and_loans_api.BLO
                 Balance = expectedBalance
             });
             return bill;
+        }
+
+        // item/wallet logic above assumes an expense, so ADDITION bills must not go through it
+        private void EnsureBillIsExpense(Bill bill)
+        {
+            if (bill.Type == BillType.ADDITION)
+            {
+                throw new ArgumentException("Cannot modify a balance addition bill");
+            }
         }
     }
 }
