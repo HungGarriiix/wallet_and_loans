@@ -48,7 +48,7 @@ namespace yuuka_chan.Command
             responseBody = string.Empty;
             foreach (var bill in bills)
             {
-                string balanceOperator = bill.Total == 0 ? "" : (bill.Type == (int)BillType.EXPENSE ? " + " : " - ");
+                string balanceOperator = bill.Total == 0 ? "" : (bill.Type == (int)BillType.ADDITION ? " + " : " - ");
                 responseBody += $"## Bill #{bill.ID}\n" +
                     $"**Description**: {bill.Description}\n" +
                     $"**Date**: {bill.Date}\n" +
@@ -183,7 +183,7 @@ namespace yuuka_chan.Command
             {
                 responseBody = ex.Message;
             }
-            string balanceOperator = res.Total == 0 ? "" : (res.Type == (int)BillType.EXPENSE ? " + " : " - ");
+            string balanceOperator = res.Total == 0 ? "" : (res.Type == (int)BillType.ADDITION ? " + " : " - ");
             responseBody = $"## Bill #{res.ID}\n" +
                 $"**Description**: {res.Description}\n" +
                 $"**Date**: {res.Date}\n" +

@@ -47,6 +47,7 @@ namespace wallet_and_loans_api.Services
                 Owner = bill.Owner.Username,
                 Total = bill.Total,
                 Type = bill.Type,
+                TypeName = bill.Type.ToString(),
                 Items = bill.Items.Select(item => new BillItemResponseDTO()
                     {
                         Name = item.Name,
