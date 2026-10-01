@@ -1,4 +1,5 @@
-﻿using wallet_and_loans_components.Common.Enums;
+﻿using wallet_and_loans_api.Model.DTO.ItemDTO;
+using wallet_and_loans_components.Common.Enums;
 using wallet_and_loans_components.Logics;
 
 namespace wallet_and_loans_api.Model.DTO.BillDTO
@@ -14,6 +15,7 @@ namespace wallet_and_loans_api.Model.DTO.BillDTO
             Owner = bill.Owner.Username;
             Total = bill.Total;
             Type = bill.Type;
+            TypeName = bill.Type.ToString();
         }
 
         public int ID { get; private set; }
@@ -23,5 +25,6 @@ namespace wallet_and_loans_api.Model.DTO.BillDTO
         public string Owner { get; private set; }
         public float Total { get; set; }
         public BillType Type { get; private set; }
+        public string TypeName { get; set; }
     }
 }

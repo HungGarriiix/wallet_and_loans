@@ -120,6 +120,7 @@ namespace wallet_and_loans_api.Services
                 Owner = bill.Owner.Username,
                 Total = bill.Total,
                 Type = bill.Type,
+                TypeName = bill.Type.ToString(),
                 Items = null //for now
             };
 
@@ -147,7 +148,8 @@ namespace wallet_and_loans_api.Services
                     WalletUsedID = bill.WalletUsed,
                     Owner = bill.Owner.Username,
                     Total = bill.Total,
-                    Type = bill.Type
+                    Type = bill.Type,
+                    TypeName = bill.Type.ToString()
                 },
                 ExpectedBalance = expectedBalance
             };

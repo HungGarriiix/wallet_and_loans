@@ -18,6 +18,7 @@ namespace wallet_and_loans_api.Model.DTO.BillDTO
         public string Owner { get; set; }
         public float Total { get; set; }
         public BillType Type { get; set; }
+        public string TypeName { get; set; }
         public List<BillItemResponseDTO> Items { get; set; }
     }
 }
