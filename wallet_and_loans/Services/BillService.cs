@@ -1,0 +1,181 @@
+using System.Xml;
+using wallet_and_loans_api.Common;
+using wallet_and_loans_api.Common.Session;
+using wallet_and_loans_api.IBLO;
+using wallet_and_loans_api.IServices;
+using wallet_and_loans_api.Model.DTO.BillDTO;
+using wallet_and_loans_api.Model.DTO.ItemDTO;
+using wallet_and_loans_components.Logics;
+
+namespace wallet_and_loans_api.Services
+{
+    public class BillService: BaseService, IBillService
+    {
+        private readonly IBillBLO _billBLO;
+        private readonly IUserBLO _userBLO;
+        private readonly IWalletBLO _walletBLO;
+
+        public BillService(IBillBLO billBLO, IUserBLO userBLO, IWalletBLO walletBLO, ISessionDataProvider sessionDataProvider)
+            : base(sessionDataProvider)
+        {
+            _billBLO = billBLO;
+            _userBLO = userBLO;
+            _walletBLO = walletBLO;
+        }
+
+        public IEnumerable<BillResponseDTO> GetBills()
+        {
+            string userId = _sessionDataProvider.UserId;
+            if (string.IsNullOrEmpty(userId)) throw new Exception("Unauthorized: User session not found.");
+            
+            User user = _userBLO.GetUserById(Convert.ToInt32(userId));
+            if (user == null) throw new Exception("User not found.");
+
+            IEnumerable<Bill> bills = _billBLO.GetBills(user);
+            return BundleBillsIntoList(bills);
+        }
+
+        public BillDetailsResponseDTO GetBill(int id)
+        {
+            Bill bill = _billBLO.GetBillByID(id);
+            BillDetailsResponseDTO billDetails = new BillDetailsResponseDTO
+            {
+                ID = bill.ID,
+                Date = bill.Date,
+                Description = bill.Description,
+                WalletUsedID = bill.WalletUsed,
+                Owner = bill.Owner.Username,
+                Total = bill.Total,
+                Type = bill.Type,
+                TypeName = bill.Type.ToString(),
+                Items = bill.Items.Select(item => new BillItemResponseDTO()
+                    {
+                        Name = item.Name,
+                        Quantity = item.Quantity,
+                        SinglePrice = item.SinglePrice,
+                        TotalPrice = item.TotalPrice,
+                    }
+                ).ToList()
+            };
+            return billDetails;
+        }
+
+        public BillResponseDTO CreateBill(CreateBillDTO dto)
+        {
+            string userId = _sessionDataProvider.UserId;
+            if (string.IsNullOrEmpty(userId)) throw new Exception("Unauthorized: User session not found.");
+
+            User user = _userBLO.GetUserById(Convert.ToInt32(userId));
+            if (user == null) throw new Exception("User not found.");
+
+            Bill bill = _billBLO.CreateBill(dto, user);
+            return new BillResponseDTO(bill);
+        }
+
+        public AddItemToBillDTO AddItemToBill(int billId, BillItemDTO item)
+        {
+            Bill bill = _billBLO.GetBillByID(billId);
+            float expectedBalance = 0f;
+            BillItem billItem = new BillItem(item.Name, item.Quantity, item.TotalPrice);
+
+            _billBLO.AddItemToBill(bill, billItem, ref expectedBalance);
+
+            return new AddItemToBillDTO
+            {
+                Item = new BillItemResponseDTO
+                {
+                    Name = billItem.Name,
+                    Quantity = billItem.Quantity,
+                    SinglePrice = billItem.SinglePrice,
+                    TotalPrice = billItem.TotalPrice
+                },
+                ExpectedBalance = expectedBalance,
+                BillItems = BundleBillItemsIntoList(bill.Items)
+            };
+        }
+
+        public BillResponseDTO UpdateBill(int id, UpdateBillDTO dto)
+        {
+            Wallet wallet = _walletBLO.GetWallet(dto.WalletUsedId);
+            Bill updatedBill = new Bill
+            {
+                Date = dto.Date,
+                Description = dto.Description,
+                WalletUsed = wallet
+            };
+            Bill result = new Bill();
+
+            _billBLO.UpdateBill(id, updatedBill, ref result);
+            return new BillResponseDTO(result);
+        }
+
+        public BillDetailsResponseDTO DeleteAllBillItem(int id)
+        {
+            Bill bill = _billBLO.DeleteAllBillItems(id);
+            BillDetailsResponseDTO billDetail = new BillDetailsResponseDTO()
+            {
+                ID = bill.ID,
+                Date = bill.Date,
+                Description = bill.Description,
+                WalletUsedID = bill.WalletUsed,
+                Owner = bill.Owner.Username,
+                Total = bill.Total,
+                Type = bill.Type,
+                TypeName = bill.Type.ToString(),
+                Items = null //for now
+            };
+
+            return billDetail;
+        }
+
+        public AddBalanceResponseDTO AddBalance(AddBalanceDTO dto)
+        {
+            string userId = _sessionDataProvider.UserId;
+            if (string.IsNullOrEmpty(userId)) throw new Exception("Unauthorized: User session not found.");
+
+            User user = _userBLO.GetUserById(Convert.ToInt32(userId));
+            if (user == null) throw new Exception("User not found.");
+
+            float expectedBalance = 0f;
+            Bill bill = _billBLO.AddBalance(dto, user, ref expectedBalance);
+
+            return new AddBalanceResponseDTO
+            {
+                Bill = new BillDetailsResponseDTO
+                {
+                    ID = bill.ID,
+                    Date = bill.Date,
+                    Description = bill.Description,
+                    WalletUsedID = bill.WalletUsed,
+                    Owner = bill.Owner.Username,
+                    Total = bill.Total,
+                    Type = bill.Type,
+                    TypeName = bill.Type.ToString()
+                },
+                ExpectedBalance = expectedBalance
+            };
+        }
+
+        private List<BillResponseDTO> BundleBillsIntoList(IEnumerable<Bill> bills)
+        {
+            List<BillResponseDTO> billsList = new List<BillResponseDTO>();
+            foreach(Bill bill in bills)
+                billsList.Add(new BillResponseDTO(bill));
+            return billsList;
+        }
+
+        private List<BillItemResponseDTO> BundleBillItemsIntoList(IEnumerable<BillItem> billItems)
+        {
+            List<BillItemResponseDTO> billItemList = new List<BillItemResponseDTO>();
+            foreach (BillItem billItem in billItems)
+                billItemList.Add(new BillItemResponseDTO
+                {
+                    Name = billItem.Name,
+                    Quantity = billItem.Quantity,
+                    SinglePrice = billItem.SinglePrice,
+                    TotalPrice = billItem.TotalPrice
+                });
+            return billItemList;
+        }
+    }
+}
