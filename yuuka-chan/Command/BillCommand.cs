@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using wallet_and_loans_components.Common.Enums;
 using yuuka_chan.Types.Request.Bill;
 using yuuka_chan.Types.Response.Bills;
 using yuuka_chan.Types.Response.Items;
@@ -47,11 +48,13 @@ namespace yuuka_chan.Command
             responseBody = string.Empty;
             foreach (var bill in bills)
             {
+                string balanceOperator = bill.Total == 0 ? "" : (bill.Type == (int)BillType.ADDITION ? " + " : " - ");
                 responseBody += $"## Bill #{bill.ID}\n" +
                     $"**Description**: {bill.Description}\n" +
                     $"**Date**: {bill.Date}\n" +
                     $"**Owner**: {bill.Owner}\n" +
-                    $"**Total**: {bill.Total}\n" +
+                    $"**Type**: {bill.TypeName}\n" +
+                    $"**Total**: {balanceOperator}{bill.Total}\n" +
                     $"**Wallet**: {bill.WalletUsedID?.Name} (ID: {bill.WalletUsedID?.ID})\n" +
                     "------------------------------------\n";
             }
@@ -180,11 +183,13 @@ namespace yuuka_chan.Command
             {
                 responseBody = ex.Message;
             }
+            string balanceOperator = res.Total == 0 ? "" : (res.Type == (int)BillType.ADDITION ? " + " : " - ");
             responseBody = $"## Bill #{res.ID}\n" +
                 $"**Description**: {res.Description}\n" +
                 $"**Date**: {res.Date}\n" +
                 $"**Owner**: {res.Owner}\n" +
-                $"**Total**: {res.Total}\n" +
+                $"**Type**: {res.TypeName}\n" +
+                $"**Total**: {balanceOperator}{res.Total}\n" +
                 $"**Wallet used**: {res.WalletUsedID?.Name}\n";
             if (res.Items == null || res.Items.Count == 0)
             {
@@ -296,6 +301,58 @@ namespace yuuka_chan.Command
             await ctx.EditResponseAsync(new DiscordWebhookBuilder()
                 .AddEmbed(embed)
                 .WithContent($"Cleared bill items."));
+        }
+
+        [SlashCommand("add-balance", "Add money to a wallet (salary, gift, payback...)")]
+        public async Task AddBalance(InteractionContext ctx,
+            [Option("wallet_id", "The wallet ID receiving the money")] long walletID,
+            [Option("amount", "The amount received")] double amount,
+            [Option("description", "Where the money comes from, e.g. Salary")] string description,
+            [Option("date_created", "Date received. Format: DD-MM-YYYY. Defaults to today")] string dateCreated = null)
+        {
+            await ctx.DeferAsync();
+
+            string responseBody = string.Empty;
+            AddBalanceRes res = new AddBalanceRes();
+            try
+            {
+                AddBalanceReq body = new AddBalanceReq
+                {
+                    DateCreated = string.IsNullOrWhiteSpace(dateCreated)
+                        ? DateTime.Now
+                        : DateTime.ParseExact(dateCreated, "dd-MM-yyyy", CultureInfo.InvariantCulture),
+                    Description = description,
+                    WalletUsedID = walletID,
+                    Amount = amount
+                };
+                StringContent content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await Program.PostAuthorizedAsync(_billApi + "/add-balance", ctx.User.Id, content);
+                responseBody = await response.Content.ReadAsStringAsync();
+                if (!response.IsSuccessStatusCode) throw new Exception(responseBody);
+                res = JsonConvert.DeserializeObject<AddBalanceRes>(responseBody);
+            }
+            catch (Exception ex)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Error: {ex.Message}"));
+                return;
+            }
+            responseBody = $"## Bill #{res.Bill.ID}\n" +
+                $"**Description**: {res.Bill.Description}\n" +
+                $"**Date**: {res.Bill.Date}\n" +
+                $"**Owner**: {res.Bill.Owner}\n" +
+                $"**Amount increased**: + {res.Bill.Total}\n" +
+                $"**Wallet**: {res.Bill.WalletUsedID?.Name}\n" +
+                $"***Balance***: {res.ExpectedBalance}";
+
+            var embed = new DiscordEmbedBuilder
+            {
+                Title = "Add balance",
+                Description = responseBody,
+                Color = DiscordColor.Green,
+            };
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                .AddEmbed(embed)
+                .WithContent($"Added balance."));
         }
     }
 }
