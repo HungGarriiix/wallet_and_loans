@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
@@ -36,11 +37,31 @@ namespace yuuka_chan
             var payload = JsonConvert.SerializeObject(new { userName = discordUserId.ToString() });
             var content = new StringContent(payload, Encoding.UTF8, "application/json");
             var response = await Service.PostAsync(URL + "/api/auth/login", content);
-            response.EnsureSuccessStatusCode();
-            var body = await response.Content.ReadAsStringAsync();
+            var body = await ReadBodyOrThrowAsync(response);
             var loginRes = JsonConvert.DeserializeObject<LoginRes>(body);
             _tokenCache[discordUserId] = loginRes!.Token;
             return loginRes.Token;
+        }
+
+        // Reads the response body; on a non-success status throws with the backend's message instead
+        public static async Task<string> ReadBodyOrThrowAsync(HttpResponseMessage response)
+        {
+            string body = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(string.IsNullOrWhiteSpace(body)
+                    ? $"Request failed: {(int)response.StatusCode} {response.ReasonPhrase}"
+                    : body);
+            return body;
+        }
+
+        public static Task SendErrorAsync(InteractionContext ctx, string message)
+        {
+            return ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder
+            {
+                Title = "Error",
+                Description = message,
+                Color = DiscordColor.Red,
+            }));
         }
 
         public static async Task<HttpResponseMessage> GetAuthorizedAsync(string url, ulong discordUserId)

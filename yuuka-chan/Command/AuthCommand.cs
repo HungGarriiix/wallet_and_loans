@@ -33,18 +33,19 @@ namespace yuuka_chan.Command
                 };
                 StringContent content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await Program.PostAuthorizedAsync(_authApi + "/register/third", ctx.User.Id, content);
-                responseBody = await response.Content.ReadAsStringAsync();
+                responseBody = await Program.ReadBodyOrThrowAsync(response);
             }
             catch (Exception ex)
             {
-                responseBody = ex.Message;
+                await Program.SendErrorAsync(ctx, ex.Message);
+                return;
             }
 
             var embed = new DiscordEmbedBuilder
             {
                 Title = "Registration Status",
                 Description = responseBody,
-                Color = responseBody.Contains("created") ? DiscordColor.Green : DiscordColor.Yellow,
+                Color = DiscordColor.Green,
             };
 
             await ctx.EditResponseAsync(new DiscordWebhookBuilder()

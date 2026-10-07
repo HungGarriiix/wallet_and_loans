@@ -36,22 +36,22 @@ namespace yuuka_chan.Command
             try
             {
                 HttpResponseMessage response = await Program.GetAuthorizedAsync(_walletlApi, ctx.User.Id);
-                response.EnsureSuccessStatusCode();
-
-                responseBody = await response.Content.ReadAsStringAsync();
+                responseBody = await Program.ReadBodyOrThrowAsync(response);
                 res = JsonConvert.DeserializeObject<IEnumerable<WalletRes>>(responseBody) ?? new List<WalletRes>();
-                responseBody = string.Empty;
-                foreach (WalletRes wallet in res)
-                {
-                    responseBody += $"### Wallet #{wallet.ID}\n" +
-                        $"**Name:** {wallet.Name}\n" +
-                        $"**Balance:** {wallet.Balance}\n" +
-                    "------------------------------------\n";
-                }
             }
             catch (Exception ex)
             {
-                responseBody = ex.Message;
+                await Program.SendErrorAsync(ctx, ex.Message);
+                return;
+            }
+
+            responseBody = string.Empty;
+            foreach (WalletRes wallet in res)
+            {
+                responseBody += $"### Wallet #{wallet.ID}\n" +
+                    $"**Name:** {wallet.Name}\n" +
+                    $"**Balance:** {wallet.Balance}\n" +
+                "------------------------------------\n";
             }
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
@@ -80,18 +80,17 @@ namespace yuuka_chan.Command
             try
             {
                 HttpResponseMessage response = await Program.GetAuthorizedAsync(string.Format(_walletGetApi, id), ctx.User.Id);
-                response.EnsureSuccessStatusCode();
-
-                responseBody = await response.Content.ReadAsStringAsync();
+                responseBody = await Program.ReadBodyOrThrowAsync(response);
                 res = JsonConvert.DeserializeObject<WalletRes>(responseBody)!;
-
-                responseBody = $"**Name:** {res.Name}\n" +
-                   $"**Balance:** {res.Balance}\n";
             }
             catch (Exception ex)
             {
-                responseBody = ex.Message;
+                await Program.SendErrorAsync(ctx, ex.Message);
+                return;
             }
+
+            responseBody = $"**Name:** {res.Name}\n" +
+               $"**Balance:** {res.Balance}\n";
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
             {
@@ -122,17 +121,17 @@ namespace yuuka_chan.Command
             {
                 var jsonContent = new StringContent(JsonConvert.SerializeObject(req), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await Program.PostAuthorizedAsync(_createWalletApi, ctx.User.Id, jsonContent);
-                response.EnsureSuccessStatusCode();
-
-                responseBody = await response.Content.ReadAsStringAsync();
+                responseBody = await Program.ReadBodyOrThrowAsync(response);
                 res = JsonConvert.DeserializeObject<WalletRes>(responseBody)!;
-                responseBody = $"**Name:** {res.Name}\n" +
-                   $"**Balance:** {res.Balance}\n";
             }
             catch (Exception ex)
             {
-                responseBody = ex.Message;
+                await Program.SendErrorAsync(ctx, ex.Message);
+                return;
             }
+
+            responseBody = $"**Name:** {res.Name}\n" +
+               $"**Balance:** {res.Balance}\n";
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
             {
