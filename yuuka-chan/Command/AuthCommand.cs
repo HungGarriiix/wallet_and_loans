@@ -29,7 +29,10 @@ namespace yuuka_chan.Command
                 {
                     UserId = ctx.User.Id.ToString(),
                     PlatformId = int.Parse(YuukaConstants.PLATFORM_ID),
-                    DisplayName = displayName == null ? ctx.User.Username : displayName,
+                    // no display_name given: server nickname, else the Discord username
+                    DisplayName = string.IsNullOrWhiteSpace(displayName)
+                        ? (ctx.Member?.DisplayName ?? ctx.User.Username)
+                        : displayName.Trim(),
                 };
                 StringContent content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await Program.PostAuthorizedAsync(_authApi + "/register/third", ctx.User.Id, content);
