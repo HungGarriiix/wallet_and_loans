@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using wallet_and_loans_api.Common.Attributes;
 using wallet_and_loans_api.IServices;
 using wallet_and_loans_api.Model.DTO.BillDTO;
 using wallet_and_loans_api.Model.DTO.ItemDTO;
-using wallet_and_loans_api.Services;
-using wallet_and_loans_components.Logics;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,6 +21,7 @@ namespace wallet_and_loans_api.Controllers
 
         // GET: api/bills
         [HttpGet]
+        [UserAuthorization]
         public IActionResult GetBills()
         {
             try
@@ -37,6 +37,7 @@ namespace wallet_and_loans_api.Controllers
 
         // GET api/bills/{billId}
         [HttpGet("{id}")]
+        [UserAuthorization]
         public IActionResult GetBillByID(int id)
         {
             try
@@ -52,6 +53,7 @@ namespace wallet_and_loans_api.Controllers
 
         // POST api/<BillController>
         [HttpPost("create")]
+        [UserAuthorization]
         public IActionResult CreateBill([FromBody] CreateBillDTO dto)
         {
             try
@@ -67,6 +69,7 @@ namespace wallet_and_loans_api.Controllers
 
         // PUT api/<BillController>/{id}/add-items
         [HttpPut("{id}/add-items")]
+        [UserAuthorization]
         public IActionResult AddItemsIntoBill(int id, [FromBody] BillItemDTO item)
         {
             try
@@ -82,6 +85,7 @@ namespace wallet_and_loans_api.Controllers
 
         // PATCH api/bills/{id}/update
         [HttpPatch("{id}/update")]
+        [UserAuthorization]
         public IActionResult UpdateBill(int id, [FromBody] UpdateBillDTO dto)
         {
             try
@@ -97,6 +101,7 @@ namespace wallet_and_loans_api.Controllers
 
         // DELETE api/bills/{id}/delete-item
         [HttpDelete("{id}/delete-item")]
+        [UserAuthorization]
         public IActionResult DeleteAllBillItem(int id)
         {
             try
@@ -112,6 +117,7 @@ namespace wallet_and_loans_api.Controllers
 
         // POST api/bills/add-balance
         [HttpPost("add-balance")]
+        [UserAuthorization]
         public IActionResult AddBalance([FromBody] AddBalanceDTO dto)
         {
             try
