@@ -26,8 +26,9 @@ namespace wallet_and_loans_api.Services
         public IEnumerable<BillResponseDTO> GetBills()
         {
             string userId = _sessionDataProvider.UserId;
-            if (string.IsNullOrEmpty(userId)) throw new Exception("Unauthorized: User session not found.");
-            
+            // unregistered users are rejected by [UserAuthorization] before reaching here
+            //if (string.IsNullOrEmpty(userId)) throw new Exception("Unauthorized: User session not found.");
+
             User user = _userBLO.GetUserById(Convert.ToInt32(userId));
             if (user == null) throw new Exception("User not found.");
 
@@ -63,7 +64,8 @@ namespace wallet_and_loans_api.Services
         public BillResponseDTO CreateBill(CreateBillDTO dto)
         {
             string userId = _sessionDataProvider.UserId;
-            if (string.IsNullOrEmpty(userId)) throw new Exception("Unauthorized: User session not found.");
+            // unregistered users are rejected by [UserAuthorization] before reaching here
+            //if (string.IsNullOrEmpty(userId)) throw new Exception("Unauthorized: User session not found.");
 
             User user = _userBLO.GetUserById(Convert.ToInt32(userId));
             if (user == null) throw new Exception("User not found.");
@@ -131,7 +133,8 @@ namespace wallet_and_loans_api.Services
         public AddBalanceResponseDTO AddBalance(AddBalanceDTO dto)
         {
             string userId = _sessionDataProvider.UserId;
-            if (string.IsNullOrEmpty(userId)) throw new Exception("Unauthorized: User session not found.");
+            // unregistered users are rejected by [UserAuthorization] before reaching here
+            //if (string.IsNullOrEmpty(userId)) throw new Exception("Unauthorized: User session not found.");
 
             User user = _userBLO.GetUserById(Convert.ToInt32(userId));
             if (user == null) throw new Exception("User not found.");

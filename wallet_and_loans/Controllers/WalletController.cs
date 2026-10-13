@@ -25,6 +25,7 @@ namespace wallet_and_loans_api.Controllers
 
         // GET: api/wallets
         [HttpGet]
+        [UserAuthorization]
         public IActionResult GetWallets()
         {
             try
@@ -40,6 +41,7 @@ namespace wallet_and_loans_api.Controllers
 
         // GET api/wallets/:id
         [HttpGet("{id}")]
+        [UserAuthorization]
         public IActionResult GetWalletByID(int id)
         {
             try
@@ -56,6 +58,7 @@ namespace wallet_and_loans_api.Controllers
 
         // POST api/wallets/add
         [HttpPost("add")]
+        [UserAuthorization]
         public IActionResult AddWallet([FromBody] CreateWalletDTO dto)
         {
             try
@@ -88,6 +91,7 @@ namespace wallet_and_loans_api.Controllers
         // DELETE api/<WalletController>/5
         // to be continued
         [HttpDelete("{id}")]
+        [UserAuthorization]
         public IActionResult Delete(int id)
         {
             return Unauthorized();

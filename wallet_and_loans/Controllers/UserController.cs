@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using wallet_and_loans_api.Common.Attributes;
 using wallet_and_loans_api.IServices;
 
 namespace wallet_and_loans_api.Controllers
@@ -15,6 +16,7 @@ namespace wallet_and_loans_api.Controllers
         }
 
         [HttpGet("me")]
+        [UserAuthorization]
         public IActionResult GetCurrentUser()
         {
             try
