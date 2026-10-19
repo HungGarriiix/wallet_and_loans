@@ -31,6 +31,7 @@ namespace wallet_and_loans_api.BLO
                 User newUser = new User()
                 {
                     ID = TestStatic.UserCounter,
+                    Username = displayName,
                     LoginProfiles = new List<LoginProfile>()
                     {
                         new LoginProfile()

@@ -135,6 +135,7 @@ namespace wallet_and_loans_api.BLO
                 throw new ArgumentException("Bill not found");
             }
             EnsureBillIsExpense(bill);
+            EnsureBillHasItems(bill);
             float expectedBalance = bill.WalletUsed.Balance + bill.Total;
             bill.ClearAllItems();
             _billRepository.UpdateBill(bill);
@@ -187,6 +188,15 @@ namespace wallet_and_loans_api.BLO
             if (bill.Type == BillType.ADDITION)
             {
                 throw new ArgumentException("Cannot modify a balance addition bill");
+            }
+        }
+
+        // clearing a bill with no items would report success while nothing changed
+        private void EnsureBillHasItems(Bill bill)
+        {
+            if (bill.Items.Count == 0)
+            {
+                throw new ArgumentException($"Bill #{bill.ID} has no items to clear.");
             }
         }
     }
