@@ -25,9 +25,7 @@ namespace wallet_and_loans_api.Services
 
         public UserResponseDTO GetUser()
         {
-            User user = _userBLO.GetUserById(Convert.ToInt32(_sessionDataProvider.UserId));
-            if (user == null)
-                throw new Exception("User not found.");
+            User user = _userBLO.GetCurrentUser();
             return new UserResponseDTO(user);
         }
     }

@@ -13,32 +13,24 @@ namespace wallet_and_loans_api.Services
     {
         private readonly IBillBLO _billBLO;
         private readonly IUserBLO _userBLO;
-        private readonly IWalletBLO _walletBLO;
 
-        public BillService(IBillBLO billBLO, IUserBLO userBLO, IWalletBLO walletBLO, ISessionDataProvider sessionDataProvider)
+        public BillService(IBillBLO billBLO, IUserBLO userBLO, ISessionDataProvider sessionDataProvider)
             : base(sessionDataProvider)
         {
             _billBLO = billBLO;
             _userBLO = userBLO;
-            _walletBLO = walletBLO;
         }
 
         public IEnumerable<BillResponseDTO> GetBills()
         {
-            string userId = _sessionDataProvider.UserId;
-            // unregistered users are rejected by [UserAuthorization] before reaching here
-            //if (string.IsNullOrEmpty(userId)) throw new Exception("Unauthorized: User session not found.");
-
-            User user = _userBLO.GetUserById(Convert.ToInt32(userId));
-            if (user == null) throw new Exception("User not found.");
-
+            User user = _userBLO.GetCurrentUser();
             IEnumerable<Bill> bills = _billBLO.GetBills(user);
             return BundleBillsIntoList(bills);
         }
 
         public BillDetailsResponseDTO GetBill(int id)
         {
-            Bill bill = _billBLO.GetBillByID(id);
+            Bill bill = _billBLO.GetBillByID(id, _userBLO.GetCurrentUser());
             BillDetailsResponseDTO billDetails = new BillDetailsResponseDTO
             {
                 ID = bill.ID,
@@ -63,20 +55,13 @@ namespace wallet_and_loans_api.Services
 
         public BillResponseDTO CreateBill(CreateBillDTO dto)
         {
-            string userId = _sessionDataProvider.UserId;
-            // unregistered users are rejected by [UserAuthorization] before reaching here
-            //if (string.IsNullOrEmpty(userId)) throw new Exception("Unauthorized: User session not found.");
-
-            User user = _userBLO.GetUserById(Convert.ToInt32(userId));
-            if (user == null) throw new Exception("User not found.");
-
-            Bill bill = _billBLO.CreateBill(dto, user);
+            Bill bill = _billBLO.CreateBill(dto, _userBLO.GetCurrentUser());
             return new BillResponseDTO(bill);
         }
 
         public AddItemToBillDTO AddItemToBill(int billId, BillItemDTO item)
         {
-            Bill bill = _billBLO.GetBillByID(billId);
+            Bill bill = _billBLO.GetBillByID(billId, _userBLO.GetCurrentUser());
             float expectedBalance = 0f;
             BillItem billItem = new BillItem(item.Name, item.Quantity, item.TotalPrice);
 
@@ -98,22 +83,15 @@ namespace wallet_and_loans_api.Services
 
         public BillResponseDTO UpdateBill(int id, UpdateBillDTO dto)
         {
-            Wallet wallet = _walletBLO.GetWallet(dto.WalletUsedId);
-            Bill updatedBill = new Bill
-            {
-                Date = dto.Date,
-                Description = dto.Description,
-                WalletUsed = wallet
-            };
             Bill result = new Bill();
 
-            _billBLO.UpdateBill(id, updatedBill, ref result);
+            _billBLO.UpdateBill(id, dto, _userBLO.GetCurrentUser(), ref result);
             return new BillResponseDTO(result);
         }
 
         public BillDetailsResponseDTO DeleteAllBillItem(int id)
         {
-            Bill bill = _billBLO.DeleteAllBillItems(id);
+            Bill bill = _billBLO.DeleteAllBillItems(id, _userBLO.GetCurrentUser());
             BillDetailsResponseDTO billDetail = new BillDetailsResponseDTO()
             {
                 ID = bill.ID,
@@ -132,15 +110,8 @@ namespace wallet_and_loans_api.Services
 
         public AddBalanceResponseDTO AddBalance(AddBalanceDTO dto)
         {
-            string userId = _sessionDataProvider.UserId;
-            // unregistered users are rejected by [UserAuthorization] before reaching here
-            //if (string.IsNullOrEmpty(userId)) throw new Exception("Unauthorized: User session not found.");
-
-            User user = _userBLO.GetUserById(Convert.ToInt32(userId));
-            if (user == null) throw new Exception("User not found.");
-
             float expectedBalance = 0f;
-            Bill bill = _billBLO.AddBalance(dto, user, ref expectedBalance);
+            Bill bill = _billBLO.AddBalance(dto, _userBLO.GetCurrentUser(), ref expectedBalance);
 
             return new AddBalanceResponseDTO
             {

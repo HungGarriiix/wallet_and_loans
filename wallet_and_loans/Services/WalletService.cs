@@ -22,28 +22,28 @@ namespace wallet_and_loans_api.Services
 
         public IEnumerable<WalletResponseDTO> GetWallets()
         {
-            User user = _userBLO.GetUserById(Convert.ToInt32(_sessionDataProvider.UserId));
-            IEnumerable<Wallet> wallets = _walletBLO.GetWallets(user);
+            IEnumerable<Wallet> wallets = _walletBLO.GetWallets(_userBLO.GetCurrentUser());
             return BundleWalletsIntoList(wallets);
         }
 
         public WalletResponseDTO GetWalletByID(int id)
         {
-            Wallet wallet = _walletBLO.GetWallet(id);
+            Wallet wallet = _walletBLO.GetWallet(id, _userBLO.GetCurrentUser());
 
             return new WalletResponseDTO(wallet);
         }
 
         public WalletResponseDTO AddWallet(CreateWalletDTO dto)
         {
-            User user = _userBLO.GetUserById(Convert.ToInt32(_sessionDataProvider.UserId));
-            Wallet wallet = _walletBLO.CreateWallet(dto, user);
+            Wallet wallet = _walletBLO.CreateWallet(dto, _userBLO.GetCurrentUser());
 
             return new WalletResponseDTO(wallet);
         }
 
         public WalletResponseDTO UpdateWallet(int id, UpdateWalletDTO dto)
         {
+            // throws "Wallet #id not found." when the wallet isn't the caller's
+            _walletBLO.GetWallet(id, _userBLO.GetCurrentUser());
             Wallet wallet = _walletBLO.UpdateWallet(id, dto);
 
             return new WalletResponseDTO(wallet);

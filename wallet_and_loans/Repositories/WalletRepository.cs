@@ -41,6 +41,11 @@ namespace wallet_and_loans_api.Repositories
             return null;
         }
 
+        public Wallet GetWallet(int id, User owner)
+        {
+            return owner.Wallets.FirstOrDefault(w => w.ID == id);
+        }
+
         public Wallet AddWallet(Wallet wallet, User user)
         {
             if (wallet == null)

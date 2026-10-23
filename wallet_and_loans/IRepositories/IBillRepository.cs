@@ -5,7 +5,7 @@ namespace wallet_and_loans_api.IRepositories
     public interface IBillRepository
     {
         List<Bill> GetBills(User user);
-        Bill GetBill(int id);
+        Bill GetBill(int id, User owner);
         Bill AddBill(Bill bill);
         int GetBillCount();
         void UpdateBill(Bill bill);
