@@ -1,0 +1,51 @@
+services:
+  # Wallet and Loans API Service
+  wallet-api:
+    build:
+      context: .
+      dockerfile: wallet_and_loans/Dockerfile
+    image: wallet-api:latest
+    container_name: wallet-api
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "5220:80"
+    networks:
+      - wallet-network
+    volumes:
+      - wallet-data:/app/data
+    labels:
+      - "com.wallet_and_loans.description=Wallet and Loans API Service"
+
+  # Yuuka-chan Discord Bot Service
+  yuuka-bot:
+    build:
+      context: ./yuuka-chan
+      dockerfile: Dockerfile
+    image: yuuka-bot:latest
+    container_name: yuuka-bot
+    restart: unless-stopped
+    networks:
+      - wallet-network
+    volumes:
+      - ./yuuka-chan/config.json:/app/config.json:ro
+      - yuuka-logs:/app/logs
+    depends_on:
+      wallet-api:
+        condition: service_started
+    labels:
+      - "com.wallet_and_loans.description=Yuuka Discord Bot"
+    command: >
+      sh -c "sleep 10 && dotnet yuuka-chan.dll"
+
+networks:
+  wallet-network:
+    driver: bridge
+    name: wallet-network
+
+volumes:
+  wallet-data:
+    name: wallet-data
+  yuuka-logs:
+    name: yuuka-logs

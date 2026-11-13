@@ -1,0 +1,15 @@
+services:
+  wallet-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      # - ASPNETCORE_HTTPS_PORT=80
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  yuuka-bot:
+    environment:
+      - DOTNET_ENVIRONMENT=Development

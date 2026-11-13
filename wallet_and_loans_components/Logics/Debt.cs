@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace wallet_and_loans.Logics
+namespace wallet_and_loans_components.Logics
 {
     public class Debt
     {

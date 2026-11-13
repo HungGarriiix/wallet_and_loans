@@ -1,0 +1,61 @@
+﻿using System.Runtime.CompilerServices;
+using wallet_and_loans_api.IBLO;
+using wallet_and_loans_api.IRepositories;
+using wallet_and_loans_api.Model.DTO.WalletDTO;
+using wallet_and_loans_components.Logics;
+
+namespace wallet_and_loans_api.BLO
+{
+    public class WalletBLO: IWalletBLO
+    {
+        private readonly IWalletRepository _walletRepository;
+
+        public WalletBLO(IWalletRepository walletRepository)
+        {
+            _walletRepository = walletRepository;
+        }
+
+        public IEnumerable<Wallet> GetWallets(User user)
+        {
+            return _walletRepository.GetWallets(user);
+        }
+
+        // another user's wallet is reported as missing so its existence isn't revealed
+        public Wallet GetWallet(int id, User user)
+        {
+            Wallet wallet = _walletRepository.GetWallet(id, user);
+            if (wallet == null)
+                throw new Exception($"Wallet #{id} not found.");
+
+            return wallet;
+        }
+
+        public Wallet CreateWallet(CreateWalletDTO data, User user)
+        {
+            Wallet wallet = new Wallet
+            {
+                Name = data.Name,
+                Balance = data.Balance,
+            };
+
+            wallet = _walletRepository.AddWallet(wallet, user);
+            return wallet;
+        }
+
+        public Wallet UpdateWallet(int id, UpdateWalletDTO data, User user)
+        {
+            if (data == null)
+                throw new Exception("Wallet cannot be null.");
+            Wallet wallet = _walletRepository.UpdateWallet(new Wallet
+            {
+                ID = id,
+                Name = data.Name,
+                Balance = data.Balance
+            }, user);
+            if (wallet == null)
+                throw new Exception($"Wallet #{id} not found.");
+
+            return wallet;
+        }
+    }
+}

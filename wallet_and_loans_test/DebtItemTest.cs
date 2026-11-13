@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace wallet_and_loans_test
 {
-    public class LoanItemTest
+    public class DebtItemTest
     {
         DebtItem loan1;
 

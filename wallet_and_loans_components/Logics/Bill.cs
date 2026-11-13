@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using wallet_and_loans_components.Common.Enums;
 
-namespace wallet_and_loans.Logics
+namespace wallet_and_loans_components.Logics
 {
     public class Bill
     {
@@ -16,6 +17,11 @@ namespace wallet_and_loans.Logics
             Description = description;
             WalletUsed = wallet; 
             Owner = owner;
+        }
+
+        public Bill()
+        {
+
         }
 
         public Bill(int id, DateTime date, string description, List<BillItem> items, Wallet wallet, User owner)
@@ -33,6 +39,7 @@ namespace wallet_and_loans.Logics
         public float Total { get { return Items.Sum(item => item.TotalPrice); } }
         public int NumberOfItems { get { return Items.Count; } }
         public int NumberOfQuantities { get { return Items.Sum(x => x.Quantity); } }
+        public BillType Type { get; set; } = BillType.EXPENSE;
 
         public void AddItemToBill(BillItem item)
         {
@@ -44,6 +51,7 @@ namespace wallet_and_loans.Logics
                     found_item.Quantity += item.Quantity;
                     return;
                 }
+                Items.Add(item);
             }
             catch (Exception ex)
             {
@@ -68,9 +76,15 @@ namespace wallet_and_loans.Logics
         {
             BillItem item = Items.Find(x => x.Name == name);
             if (item == null)
-                throw new Exception($"Cannot find item with name '{name}'...");
+                //throw new Exception($"Cannot find item with name '{name}'...");
+                return null;
 
             return item;
+        }
+
+        public void ClearAllItems()
+        {
+            Items.Clear();
         }
 
         private void DeductWalletBalance()
