@@ -42,9 +42,7 @@ namespace wallet_and_loans_api.Services
 
         public WalletResponseDTO UpdateWallet(int id, UpdateWalletDTO dto)
         {
-            // throws "Wallet #id not found." when the wallet isn't the caller's
-            _walletBLO.GetWallet(id, _userBLO.GetCurrentUser());
-            Wallet wallet = _walletBLO.UpdateWallet(id, dto);
+            Wallet wallet = _walletBLO.UpdateWallet(id, dto, _userBLO.GetCurrentUser());
 
             return new WalletResponseDTO(wallet);
         }

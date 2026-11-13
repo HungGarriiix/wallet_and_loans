@@ -30,17 +30,6 @@ namespace wallet_and_loans_api.Repositories
             return user.Wallets;
         }
 
-        public Wallet GetWallet(int id)
-        {
-            foreach (User user in TestStatic.Users)
-            {
-                Wallet wallet = user.Wallets.FirstOrDefault(w => w.ID == id);
-                if (wallet != null)
-                    return wallet;
-            }
-            return null;
-        }
-
         public Wallet GetWallet(int id, User owner)
         {
             return owner.Wallets.FirstOrDefault(w => w.ID == id);
@@ -57,13 +46,13 @@ namespace wallet_and_loans_api.Repositories
             return wallet;
         }
 
-        public Wallet UpdateWallet(Wallet wallet)
+        public Wallet UpdateWallet(Wallet wallet, User owner)
         {
             if (wallet == null)
                 throw new Exception("Wallet cannot be null.");
-            Wallet existingWallet = this.GetWallet(wallet.ID);
+            Wallet existingWallet = this.GetWallet(wallet.ID, owner);
             if (existingWallet == null)
-                throw new Exception("Wallet not found.");
+                return null;
             existingWallet.Name = wallet.Name;
             existingWallet.Balance = wallet.Balance;
 

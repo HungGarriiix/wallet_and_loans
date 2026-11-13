@@ -55,42 +55,47 @@ namespace wallet_and_loans_api.BLO
         public void AddItemToBill(Bill bill, BillItem item, ref float expectedBalance)
         {
             EnsureBillIsExpense(bill);
+            // the bill was found by owner, so its owner is the caller
+            Wallet wallet = _walletBLO.GetWallet(bill.WalletUsed.ID, bill.Owner);
+            expectedBalance = wallet.Balance - item.TotalPrice;
+
             bill.AddItemToBill(item);
-            expectedBalance = bill.WalletUsed.Balance - item.TotalPrice;
             _billRepository.UpdateBill(bill);
-            bill.WalletUsed.Balance = expectedBalance;
-            UpdateWalletDTO wallet = new UpdateWalletDTO
+            bill.WalletUsed = _walletBLO.UpdateWallet(wallet.ID, new UpdateWalletDTO
             {
-                Name = bill.WalletUsed.Name,
+                Name = wallet.Name,
                 Balance = expectedBalance
-            };
-            _walletBLO.UpdateWallet(bill.WalletUsed.ID, wallet);
+            }, bill.Owner);
         }
 
         public void UpdateBill(int targetBillId, UpdateBillDTO data, User user, ref Bill result)
         {
             Bill targetBill = GetBillByID(targetBillId, user);
             EnsureBillIsExpense(targetBill);
+            // both wallets are looked up before any balance changes
+            Wallet oldWallet = _walletBLO.GetWallet(targetBill.WalletUsed.ID, user);
             Wallet newWallet = _walletBLO.GetWallet(data.WalletUsedId, user);
 
             targetBill.Date = data.Date;
             targetBill.Description = data.Description;
 
-            // return money to the wallet used in the original bill
-            float originalBillTotal = targetBill.Total;
-            newWallet.Balance -= originalBillTotal;
-            targetBill.WalletUsed.Balance += originalBillTotal;
-
-            _walletBLO.UpdateWallet(targetBill.WalletUsed.ID, new UpdateWalletDTO
+            // moving the bill to the wallet it already uses leaves the balance unchanged
+            if (oldWallet.ID != newWallet.ID)
             {
-                Name = targetBill.WalletUsed.Name,
-                Balance = targetBill.WalletUsed.Balance
-            });
-            _walletBLO.UpdateWallet(newWallet.ID, new UpdateWalletDTO
-            {
-                Name = newWallet.Name,
-                Balance = newWallet.Balance
-            });
+                float originalBillTotal = targetBill.Total;
+                // return money to the wallet used in the original bill
+                _walletBLO.UpdateWallet(oldWallet.ID, new UpdateWalletDTO
+                {
+                    Name = oldWallet.Name,
+                    Balance = oldWallet.Balance + originalBillTotal
+                }, user);
+                // charge the new wallet
+                newWallet = _walletBLO.UpdateWallet(newWallet.ID, new UpdateWalletDTO
+                {
+                    Name = newWallet.Name,
+                    Balance = newWallet.Balance - originalBillTotal
+                }, user);
+            }
 
             // Update the new wallet
             targetBill.WalletUsed = newWallet;
@@ -107,18 +112,18 @@ namespace wallet_and_loans_api.BLO
             {
                 throw new ArgumentOutOfRangeException("Item index is out of range");
             }
+            Wallet wallet = _walletBLO.GetWallet(bill.WalletUsed.ID, user);
             BillItem itemToRemove = bill.Items[itemIndex];
-            float expectedBalance = bill.WalletUsed.Balance + itemToRemove.TotalPrice;
+            float expectedBalance = wallet.Balance + itemToRemove.TotalPrice;
+
             bill.RemoveItemFromBill(itemToRemove.Name);
             _billRepository.UpdateBill(bill);
             // Update the wallet balance
-            bill.WalletUsed.Balance = expectedBalance;
-            UpdateWalletDTO wallet = new UpdateWalletDTO
+            bill.WalletUsed = _walletBLO.UpdateWallet(wallet.ID, new UpdateWalletDTO
             {
-                Name = bill.WalletUsed.Name,
+                Name = wallet.Name,
                 Balance = expectedBalance
-            };
-            _walletBLO.UpdateWallet(bill.WalletUsed.ID, wallet);
+            }, user);
         }
 
         public Bill DeleteAllBillItems(int billId, User user)
@@ -126,17 +131,17 @@ namespace wallet_and_loans_api.BLO
             Bill bill = GetBillByID(billId, user);
             EnsureBillIsExpense(bill);
             EnsureBillHasItems(bill);
-            float expectedBalance = bill.WalletUsed.Balance + bill.Total;
+            Wallet wallet = _walletBLO.GetWallet(bill.WalletUsed.ID, user);
+            float expectedBalance = wallet.Balance + bill.Total;
+
             bill.ClearAllItems();
             _billRepository.UpdateBill(bill);
             // Update the wallet balance
-            bill.WalletUsed.Balance = expectedBalance;
-            UpdateWalletDTO wallet = new UpdateWalletDTO
+            bill.WalletUsed = _walletBLO.UpdateWallet(wallet.ID, new UpdateWalletDTO
             {
-                Name = bill.WalletUsed.Name,
+                Name = wallet.Name,
                 Balance = expectedBalance
-            };
-            _walletBLO.UpdateWallet(bill.WalletUsed.ID, wallet);
+            }, user);
             return bill;
         }
 
@@ -163,12 +168,11 @@ namespace wallet_and_loans_api.BLO
 
             // increase the wallet balance
             expectedBalance = wallet.Balance + data.Amount;
-            wallet.Balance = expectedBalance;
-            _walletBLO.UpdateWallet(wallet.ID, new UpdateWalletDTO
+            bill.WalletUsed = _walletBLO.UpdateWallet(wallet.ID, new UpdateWalletDTO
             {
                 Name = wallet.Name,
                 Balance = expectedBalance
-            });
+            }, user);
             return bill;
         }
 
