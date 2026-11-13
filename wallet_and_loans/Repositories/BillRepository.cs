@@ -16,9 +16,9 @@ namespace wallet_and_loans_api.Repositories
             return TestStatic.Bills.Where(b => b.Owner.ID == user.ID).ToList();
         }
 
-        public Bill GetBill(int id)
+        public Bill GetBill(int id, User owner)
         {
-            return TestStatic.Bills.FirstOrDefault(b => b.ID == id);
+            return GetBills(owner).FirstOrDefault(b => b.ID == id);
         }
 
         public Bill AddBill(Bill bill)

@@ -33,15 +33,13 @@ namespace yuuka_chan.Command
             try
             {
                 HttpResponseMessage response = await Program.GetAuthorizedAsync(_billApi, ctx.User.Id);
-                response.EnsureSuccessStatusCode();
-
-                responseBody = await response.Content.ReadAsStringAsync();
+                responseBody = await Program.ReadBodyOrThrowAsync(response);
                 bills = JsonConvert.DeserializeObject<BillRes[]>(responseBody);
                 if (bills == null || bills.Length == 0) throw new Exception("No bills found.");
             }
             catch (Exception ex)
             {
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Error: {ex.Message}"));
+                await Program.SendErrorAsync(ctx, ex.Message);
                 return;
             }
 
@@ -92,13 +90,13 @@ namespace yuuka_chan.Command
                 };
                 StringContent content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await Program.PostAuthorizedAsync(_billApi + "/create", ctx.User.Id, content);
-                response.EnsureSuccessStatusCode();
-                responseBody = await response.Content.ReadAsStringAsync();
+                responseBody = await Program.ReadBodyOrThrowAsync(response);
                 createdBill = JsonConvert.DeserializeObject<BillRes>(responseBody);
             }
             catch (Exception ex)
             {
-                responseBody = ex.Message;
+                await Program.SendErrorAsync(ctx, ex.Message);
+                return;
             }
             responseBody = $"## Bill #{createdBill.ID}" +
                 $"\n**Description**: {createdBill.Description}\n" +
@@ -137,13 +135,13 @@ namespace yuuka_chan.Command
                 };
                 StringContent content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await Program.PutAuthorizedAsync(string.Format(_billGetApi, billID) + "/add-items", ctx.User.Id, content);
-                response.EnsureSuccessStatusCode();
-                responseBody = await response.Content.ReadAsStringAsync();
+                responseBody = await Program.ReadBodyOrThrowAsync(response);
                 res = JsonConvert.DeserializeObject<AddNewBillItemRes>(responseBody);
             }
             catch (Exception ex)
             {
-                responseBody = ex.Message;
+                await Program.SendErrorAsync(ctx, ex.Message);
+                return;
             }
             responseBody = $"Added \"{res.Item.Name}\" (x{res.Item.Quantity})\n" +
                 $"***Balance***: {res.ExpectedBalance}\n" +
@@ -175,13 +173,13 @@ namespace yuuka_chan.Command
             try
             {
                 HttpResponseMessage response = await Program.GetAuthorizedAsync(string.Format(_billGetApi, billID), ctx.User.Id);
-                response.EnsureSuccessStatusCode();
-                responseBody = await response.Content.ReadAsStringAsync();
+                responseBody = await Program.ReadBodyOrThrowAsync(response);
                 res = JsonConvert.DeserializeObject<BillDetailsRes>(responseBody);
             }
             catch (Exception ex)
             {
-                responseBody = ex.Message;
+                await Program.SendErrorAsync(ctx, ex.Message);
+                return;
             }
             string balanceOperator = res.Total == 0 ? "" : (res.Type == (int)BillType.ADDITION ? " + " : " - ");
             responseBody = $"## Bill #{res.ID}\n" +
@@ -238,13 +236,13 @@ namespace yuuka_chan.Command
             {
                 var jsonContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await Program.PatchAuthorizedAsync(string.Format(_billGetApi, billID) + "/update", ctx.User.Id, jsonContent);
-                response.EnsureSuccessStatusCode();
-                responseBody = await response.Content.ReadAsStringAsync();
+                responseBody = await Program.ReadBodyOrThrowAsync(response);
                 res = JsonConvert.DeserializeObject<BillRes>(responseBody);
             }
             catch (Exception ex)
             {
-                responseBody = ex.Message;
+                await Program.SendErrorAsync(ctx, ex.Message);
+                return;
             }
             responseBody = $"## Updated Bill #{res.ID}\n" +
                 $"**Description**: {res.Description}\n" +
@@ -275,13 +273,12 @@ namespace yuuka_chan.Command
             try
             {
                 HttpResponseMessage response = await Program.DeleteAuthorizedAsync(string.Format(_billGetApi, billID) + "/delete-item", ctx.User.Id);
-                responseBody = await response.Content.ReadAsStringAsync();
-                if (!response.IsSuccessStatusCode) throw new Exception(responseBody);
+                responseBody = await Program.ReadBodyOrThrowAsync(response);
                 res = JsonConvert.DeserializeObject<BillDetailsRes>(responseBody);
             }
             catch (Exception ex)
             {
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Error: {ex.Message}"));
+                await Program.SendErrorAsync(ctx, ex.Message);
                 return;
             }
             responseBody = $"## Bill #{res.ID}\n" +
@@ -327,13 +324,12 @@ namespace yuuka_chan.Command
                 };
                 StringContent content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await Program.PostAuthorizedAsync(_billApi + "/add-balance", ctx.User.Id, content);
-                responseBody = await response.Content.ReadAsStringAsync();
-                if (!response.IsSuccessStatusCode) throw new Exception(responseBody);
+                responseBody = await Program.ReadBodyOrThrowAsync(response);
                 res = JsonConvert.DeserializeObject<AddBalanceRes>(responseBody);
             }
             catch (Exception ex)
             {
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Error: {ex.Message}"));
+                await Program.SendErrorAsync(ctx, ex.Message);
                 return;
             }
             responseBody = $"## Bill #{res.Bill.ID}\n" +

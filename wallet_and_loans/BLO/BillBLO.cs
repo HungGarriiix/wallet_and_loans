@@ -24,19 +24,20 @@ namespace wallet_and_loans_api.BLO
             return bills;
         }
 
-        public Bill GetBillByID(int id)
+        // another user's bill is reported as missing so its existence isn't revealed
+        public Bill GetBillByID(int id, User user)
         {
-            Bill bill = _billRepository.GetBill(id);
+            Bill bill = _billRepository.GetBill(id, user);
             if (bill == null)
             {
-                throw new ArgumentException("Bill not found");
+                throw new ArgumentException($"Bill #{id} not found.");
             }
             return bill;
         }
 
         public Bill CreateBill(CreateBillDTO data, User user)
         {
-            Wallet wallet = _walletBLO.GetWallet(data.WalletUsedID);
+            Wallet wallet = _walletBLO.GetWallet(data.WalletUsedID, user);
 
             int billCount = _billRepository.GetBillCount();
             Bill bill = new Bill(
@@ -54,98 +55,93 @@ namespace wallet_and_loans_api.BLO
         public void AddItemToBill(Bill bill, BillItem item, ref float expectedBalance)
         {
             EnsureBillIsExpense(bill);
+            // the bill was found by owner, so its owner is the caller
+            Wallet wallet = _walletBLO.GetWallet(bill.WalletUsed.ID, bill.Owner);
+            expectedBalance = wallet.Balance - item.TotalPrice;
+
             bill.AddItemToBill(item);
-            expectedBalance = bill.WalletUsed.Balance - item.TotalPrice;
             _billRepository.UpdateBill(bill);
-            bill.WalletUsed.Balance = expectedBalance;
-            UpdateWalletDTO wallet = new UpdateWalletDTO
+            bill.WalletUsed = _walletBLO.UpdateWallet(wallet.ID, new UpdateWalletDTO
             {
-                Name = bill.WalletUsed.Name,
+                Name = wallet.Name,
                 Balance = expectedBalance
-            };
-            _walletBLO.UpdateWallet(bill.WalletUsed.ID, wallet);
+            }, bill.Owner);
         }
 
-        public void UpdateBill(int targetBillId, Bill updateBill, ref Bill result)
+        public void UpdateBill(int targetBillId, UpdateBillDTO data, User user, ref Bill result)
         {
-            Bill targetBill = _billRepository.GetBill(targetBillId);
-            if (targetBill == null)
-            {
-                throw new ArgumentException("Bill not found");
-            }
+            Bill targetBill = GetBillByID(targetBillId, user);
             EnsureBillIsExpense(targetBill);
+            // both wallets are looked up before any balance changes
+            Wallet oldWallet = _walletBLO.GetWallet(targetBill.WalletUsed.ID, user);
+            Wallet newWallet = _walletBLO.GetWallet(data.WalletUsedId, user);
 
-            targetBill.Date = updateBill.Date;
-            targetBill.Description = updateBill.Description;
+            targetBill.Date = data.Date;
+            targetBill.Description = data.Description;
 
-            // return money to the wallet used in the original bill
-            float originalBillTotal = targetBill.Total;
-            updateBill.WalletUsed.Balance -= originalBillTotal;
-            targetBill.WalletUsed.Balance += originalBillTotal;
-
-            _walletBLO.UpdateWallet(targetBill.WalletUsed.ID, new UpdateWalletDTO
+            // moving the bill to the wallet it already uses leaves the balance unchanged
+            if (oldWallet.ID != newWallet.ID)
             {
-                Name = targetBill.WalletUsed.Name,
-                Balance = targetBill.WalletUsed.Balance
-            });
-            _walletBLO.UpdateWallet(updateBill.WalletUsed.ID, new UpdateWalletDTO
-            {
-                Name = updateBill.WalletUsed.Name,
-                Balance = updateBill.WalletUsed.Balance
-            });
+                float originalBillTotal = targetBill.Total;
+                // return money to the wallet used in the original bill
+                _walletBLO.UpdateWallet(oldWallet.ID, new UpdateWalletDTO
+                {
+                    Name = oldWallet.Name,
+                    Balance = oldWallet.Balance + originalBillTotal
+                }, user);
+                // charge the new wallet
+                newWallet = _walletBLO.UpdateWallet(newWallet.ID, new UpdateWalletDTO
+                {
+                    Name = newWallet.Name,
+                    Balance = newWallet.Balance - originalBillTotal
+                }, user);
+            }
 
             // Update the new wallet
-            targetBill.WalletUsed = updateBill.WalletUsed;
+            targetBill.WalletUsed = newWallet;
 
             _billRepository.UpdateBill(targetBill);
             result = targetBill;
         }
 
-        public void DeleteItemFromBill(int billId, int itemIndex)
+        public void DeleteItemFromBill(int billId, int itemIndex, User user)
         {
-            Bill bill = _billRepository.GetBill(billId);
-            if (bill == null)
-            {
-                throw new ArgumentException("Bill not found");
-            }
+            Bill bill = GetBillByID(billId, user);
             EnsureBillIsExpense(bill);
             if (itemIndex < 0 || itemIndex >= bill.Items.Count)
             {
                 throw new ArgumentOutOfRangeException("Item index is out of range");
             }
+            Wallet wallet = _walletBLO.GetWallet(bill.WalletUsed.ID, user);
             BillItem itemToRemove = bill.Items[itemIndex];
-            float expectedBalance = bill.WalletUsed.Balance + itemToRemove.TotalPrice;
+            float expectedBalance = wallet.Balance + itemToRemove.TotalPrice;
+
             bill.RemoveItemFromBill(itemToRemove.Name);
             _billRepository.UpdateBill(bill);
             // Update the wallet balance
-            bill.WalletUsed.Balance = expectedBalance;
-            UpdateWalletDTO wallet = new UpdateWalletDTO
+            bill.WalletUsed = _walletBLO.UpdateWallet(wallet.ID, new UpdateWalletDTO
             {
-                Name = bill.WalletUsed.Name,
+                Name = wallet.Name,
                 Balance = expectedBalance
-            };
-            _walletBLO.UpdateWallet(bill.WalletUsed.ID, wallet);
+            }, user);
         }
 
-        public Bill DeleteAllBillItems(int billId)
+        public Bill DeleteAllBillItems(int billId, User user)
         {
-            Bill bill = _billRepository.GetBill(billId);
-            if (bill == null)
-            {
-                throw new ArgumentException("Bill not found");
-            }
+            Bill bill = GetBillByID(billId, user);
             EnsureBillIsExpense(bill);
-            float expectedBalance = bill.WalletUsed.Balance + bill.Total;
+            EnsureBillHasItems(bill);
+            Wallet wallet = _walletBLO.GetWallet(bill.WalletUsed.ID, user);
+            float expectedBalance = wallet.Balance + bill.Total;
+
             bill.ClearAllItems();
             _billRepository.UpdateBill(bill);
             // Update the wallet balance
-            bill.WalletUsed.Balance = expectedBalance;
-            UpdateWalletDTO wallet = new UpdateWalletDTO
+            bill.WalletUsed = _walletBLO.UpdateWallet(wallet.ID, new UpdateWalletDTO
             {
-                Name = bill.WalletUsed.Name,
+                Name = wallet.Name,
                 Balance = expectedBalance
-            };
-            _walletBLO.UpdateWallet(bill.WalletUsed.ID, wallet);
+            }, user);
             return bill;
         }
 
@@ -155,7 +151,7 @@ namespace wallet_and_loans_api.BLO
             {
                 throw new ArgumentException("Amount must be greater than 0");
             }
-            Wallet wallet = _walletBLO.GetWallet(data.WalletUsedID);
+            Wallet wallet = _walletBLO.GetWallet(data.WalletUsedID, user);
 
             Bill bill = new Bill(
                 _billRepository.GetBillCount(),
@@ -172,12 +168,11 @@ namespace wallet_and_loans_api.BLO
 
             // increase the wallet balance
             expectedBalance = wallet.Balance + data.Amount;
-            wallet.Balance = expectedBalance;
-            _walletBLO.UpdateWallet(wallet.ID, new UpdateWalletDTO
+            bill.WalletUsed = _walletBLO.UpdateWallet(wallet.ID, new UpdateWalletDTO
             {
                 Name = wallet.Name,
                 Balance = expectedBalance
-            });
+            }, user);
             return bill;
         }
 
@@ -187,6 +182,15 @@ namespace wallet_and_loans_api.BLO
             if (bill.Type == BillType.ADDITION)
             {
                 throw new ArgumentException("Cannot modify a balance addition bill");
+            }
+        }
+
+        // clearing a bill with no items would report success while nothing changed
+        private void EnsureBillHasItems(Bill bill)
+        {
+            if (bill.Items.Count == 0)
+            {
+                throw new ArgumentException($"Bill #{bill.ID} has no items to clear.");
             }
         }
     }

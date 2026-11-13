@@ -17,16 +17,15 @@ namespace wallet_and_loans_api.Services
             _userBLO = userBLO;
         }
 
-        public bool CheckUserAvailability()
-        {
-            return _userBLO.GetUserById(Convert.ToInt32(_sessionDataProvider.UserId)) != null;
-        }
+        // not called anywhere; registration is checked by [UserAuthorization]
+        //public bool CheckUserAvailability()
+        //{
+        //    return _userBLO.GetUserById(Convert.ToInt32(_sessionDataProvider.UserId)) != null;
+        //}
 
         public UserResponseDTO GetUser()
         {
-            User user = _userBLO.GetUserById(Convert.ToInt32(_sessionDataProvider.UserId));
-            if (user == null)
-                throw new Exception("User not found.");
+            User user = _userBLO.GetCurrentUser();
             return new UserResponseDTO(user);
         }
     }

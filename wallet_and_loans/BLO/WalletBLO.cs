@@ -20,11 +20,12 @@ namespace wallet_and_loans_api.BLO
             return _walletRepository.GetWallets(user);
         }
 
-        public Wallet GetWallet(int id)
+        // another user's wallet is reported as missing so its existence isn't revealed
+        public Wallet GetWallet(int id, User user)
         {
-            Wallet wallet = _walletRepository.GetWallet(id);
+            Wallet wallet = _walletRepository.GetWallet(id, user);
             if (wallet == null)
-                throw new Exception("Wallet not found.");
+                throw new Exception($"Wallet #{id} not found.");
 
             return wallet;
         }
@@ -41,17 +42,20 @@ namespace wallet_and_loans_api.BLO
             return wallet;
         }
 
-        public Wallet UpdateWallet(int id, UpdateWalletDTO data)
+        public Wallet UpdateWallet(int id, UpdateWalletDTO data, User user)
         {
             if (data == null)
                 throw new Exception("Wallet cannot be null.");
-            Wallet wallet = _walletRepository.GetWallet(id);
+            Wallet wallet = _walletRepository.UpdateWallet(new Wallet
+            {
+                ID = id,
+                Name = data.Name,
+                Balance = data.Balance
+            }, user);
             if (wallet == null)
-                throw new Exception("Wallet not found.");
+                throw new Exception($"Wallet #{id} not found.");
 
-            wallet.Name = data.Name;
-            wallet.Balance = data.Balance;
-            return _walletRepository.UpdateWallet(wallet);
+            return wallet;
         }
     }
 }

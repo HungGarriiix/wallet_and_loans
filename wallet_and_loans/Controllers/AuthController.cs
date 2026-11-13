@@ -43,7 +43,8 @@ namespace wallet_and_loans_api.Controllers
                 bool isUserRegistered = _authService.CheckUserRegistered(dto.UserId, dto.PlatformId);
                 if (isUserRegistered)
                 {
-                    return BadRequest("User has registered");
+                    // not an error: tell the user they can go on (the bot shows 2xx as a normal embed)
+                    return Ok("You've registered already. You can begin using other commands.");
                 }
 
                 bool userCreated = _authService.RegisterNewUser(dto.UserId, dto.PlatformId, dto.DisplayName);
@@ -53,7 +54,7 @@ namespace wallet_and_loans_api.Controllers
                 }
                 else
                 {
-                    return BadRequest("Error");
+                    return BadRequest("Registration failed. Please try again later.");
                 }
                 
             }

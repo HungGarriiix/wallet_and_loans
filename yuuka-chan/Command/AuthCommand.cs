@@ -29,22 +29,26 @@ namespace yuuka_chan.Command
                 {
                     UserId = ctx.User.Id.ToString(),
                     PlatformId = int.Parse(YuukaConstants.PLATFORM_ID),
-                    DisplayName = displayName == null ? ctx.User.Username : displayName,
+                    // no display_name given: server nickname, else the Discord username
+                    DisplayName = string.IsNullOrWhiteSpace(displayName)
+                        ? (ctx.Member?.DisplayName ?? ctx.User.Username)
+                        : displayName.Trim(),
                 };
                 StringContent content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await Program.PostAuthorizedAsync(_authApi + "/register/third", ctx.User.Id, content);
-                responseBody = await response.Content.ReadAsStringAsync();
+                responseBody = await Program.ReadBodyOrThrowAsync(response);
             }
             catch (Exception ex)
             {
-                responseBody = ex.Message;
+                await Program.SendErrorAsync(ctx, ex.Message);
+                return;
             }
 
             var embed = new DiscordEmbedBuilder
             {
                 Title = "Registration Status",
                 Description = responseBody,
-                Color = responseBody.Contains("created") ? DiscordColor.Green : DiscordColor.Yellow,
+                Color = DiscordColor.Green,
             };
 
             await ctx.EditResponseAsync(new DiscordWebhookBuilder()
