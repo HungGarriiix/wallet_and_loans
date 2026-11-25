@@ -30,16 +30,26 @@ namespace yuuka_chan.Command
 
             string responseBody = string.Empty;
             BillRes[] bills = [];
+            string? backendMessage = null;
             try
             {
                 HttpResponseMessage response = await Program.GetAuthorizedAsync(_billApi, ctx.User.Id);
                 responseBody = await Program.ReadBodyOrThrowAsync(response);
-                bills = JsonConvert.DeserializeObject<BillRes[]>(responseBody);
-                if (bills == null || bills.Length == 0) throw new Exception("No bills found.");
+                BillListRes res = JsonConvert.DeserializeObject<BillListRes>(responseBody)
+                    ?? throw new Exception("The server returned an empty response. Please try again.");
+                backendMessage = res.Message;
+                bills = res.Bills;
             }
             catch (Exception ex)
             {
                 await Program.SendErrorAsync(ctx, ex.Message);
+                return;
+            }
+
+            // a message from the backend is always shown, whatever the list holds
+            if (!string.IsNullOrEmpty(backendMessage))
+            {
+                await Program.SendErrorAsync(ctx, backendMessage);
                 return;
             }
 

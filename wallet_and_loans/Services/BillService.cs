@@ -21,11 +21,15 @@ namespace wallet_and_loans_api.Services
             _userBLO = userBLO;
         }
 
-        public IEnumerable<BillResponseDTO> GetBills()
+        public BillListResponseDTO GetBills()
         {
             User user = _userBLO.GetCurrentUser();
-            IEnumerable<Bill> bills = _billBLO.GetBills(user);
-            return BundleBillsIntoList(bills);
+            List<BillResponseDTO> bills = BundleBillsIntoList(_billBLO.GetBills(user));
+            return new BillListResponseDTO
+            {
+                Message = bills.Count == 0 ? "You don't have any bills yet. Use /bill create to add one." : null,
+                Bills = bills
+            };
         }
 
         public BillDetailsResponseDTO GetBill(int id)

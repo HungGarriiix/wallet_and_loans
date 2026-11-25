@@ -32,16 +32,27 @@ namespace yuuka_chan.Command
 
             string responseBody = string.Empty;
             IEnumerable<WalletRes> res = new List<WalletRes>();
+            string? backendMessage = null;
 
             try
             {
                 HttpResponseMessage response = await Program.GetAuthorizedAsync(_walletlApi, ctx.User.Id);
                 responseBody = await Program.ReadBodyOrThrowAsync(response);
-                res = JsonConvert.DeserializeObject<IEnumerable<WalletRes>>(responseBody) ?? new List<WalletRes>();
+                WalletListRes list = JsonConvert.DeserializeObject<WalletListRes>(responseBody)
+                    ?? throw new Exception("The server returned an empty response. Please try again.");
+                backendMessage = list.Message;
+                res = list.Wallets;
             }
             catch (Exception ex)
             {
                 await Program.SendErrorAsync(ctx, ex.Message);
+                return;
+            }
+
+            // a message from the backend is always shown, whatever the list holds
+            if (!string.IsNullOrEmpty(backendMessage))
+            {
+                await Program.SendErrorAsync(ctx, backendMessage);
                 return;
             }
 

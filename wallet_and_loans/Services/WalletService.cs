@@ -20,10 +20,14 @@ namespace wallet_and_loans_api.Services
             _userBLO = userBLO;
         }
 
-        public IEnumerable<WalletResponseDTO> GetWallets()
+        public WalletListResponseDTO GetWallets()
         {
-            IEnumerable<Wallet> wallets = _walletBLO.GetWallets(_userBLO.GetCurrentUser());
-            return BundleWalletsIntoList(wallets);
+            List<WalletResponseDTO> wallets = BundleWalletsIntoList(_walletBLO.GetWallets(_userBLO.GetCurrentUser()));
+            return new WalletListResponseDTO
+            {
+                Message = wallets.Count == 0 ? "You don't have any wallets yet. Use /wallet create to add one." : null,
+                Wallets = wallets
+            };
         }
 
         public WalletResponseDTO GetWalletByID(int id)

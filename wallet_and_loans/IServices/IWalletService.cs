@@ -5,7 +5,7 @@ namespace wallet_and_loans_api.IServices
 {
     public interface IWalletService
     {
-        IEnumerable<WalletResponseDTO> GetWallets();
+        WalletListResponseDTO GetWallets();
         WalletResponseDTO GetWalletByID(int id);
         WalletResponseDTO AddWallet(CreateWalletDTO dto);
         WalletResponseDTO UpdateWallet(int id, UpdateWalletDTO dto);
